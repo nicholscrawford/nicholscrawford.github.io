@@ -14,18 +14,56 @@ function drawColumn(scene, height, numCircles, xpos, yoffset){
 	//create a circle
 	const cgeometry = new THREE.CircleGeometry( 3, 32 );
 	const cmaterial = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+
+    const sgeometry = new THREE.CircleGeometry( 4, 32 );
+	const smaterial = new THREE.MeshBasicMaterial( { color: 0xafafaf } )
+
+    let Ys = Array();
 	for(let i = 0; i < numCircles; i++){
 		const circle = new THREE.Mesh( cgeometry, cmaterial );
 		scene.add( circle );
 		circle.position.x = xpos;
 		circle.position.y = (height/numCircles)*(i+1/2) - height/2 +yoffset;
+        Ys.push(circle.position.y);
 		circle.position.z = -500;
-		console.log(circle.position.y);
-	}
+
+        const scircle = new THREE.Mesh( sgeometry, smaterial );
+		scene.add( scircle );
+		scircle.position.x = xpos;
+		scircle.position.y = (height/numCircles)*(i+1/2) - height/2 +yoffset;
+		scircle.position.z = -500.1;
+    }
+    return Ys;
 }
-for(let i = 200; i > 0; i--)
+
+function drawLines(scene, lastX, lastYs, X, Ys){
+    for(let i = 0; i < lastYs.length; i++){
+        for(let j = 0; j < Ys.length; j++){
+            const material = new THREE.LineBasicMaterial( { color: 0x77fdff, linewidth: 1 } );
+            const points = [];
+            points.push( new THREE.Vector3( lastX, lastYs[i], -500.2 ) );
+            points.push( new THREE.Vector3( X, Ys[j], -500.2 ) );
+            const geometry = new THREE.BufferGeometry().setFromPoints( points );
+            const line = new THREE.Line( geometry, material );
+            scene.add( line ); 
+
+
+        }
+    }
+
+}
+
+//Initialize basic setup
+let lastX = -850;
+let lastYs = drawColumn(scene, 650, 1, -850, 100);
+
+for(let i = 2; i < 40; i++)
 {
-	drawColumn(scene, 650, i, i*20 - 850, 100)
+    let X = i*40-850;
+	let Ys = drawColumn(scene, 650, Math.floor(Math.random() * 10), X, 100);
+    drawLines(scene, lastX, lastYs, X, Ys);
+    lastX = X;
+    lastYs = Ys;
 }
 
 /* load images
@@ -38,15 +76,7 @@ sprite.scale.set(64,64,1.0);
 scene.add(sprite);
  */
 
-//create a blue LineBasicMaterial
-/* const material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
-const points = [];
-points.push( new THREE.Vector3( - 10, 0, 0 ) );
-points.push( new THREE.Vector3( 0, 10, 0 ) );
-points.push( new THREE.Vector3( 10, 0, 0 ) );
-const geometry = new THREE.BufferGeometry().setFromPoints( points );
-const line = new THREE.Line( geometry, material );
-scene.add( line ); */
+
 
 camera.position.z = 100;
 
