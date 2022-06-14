@@ -57,9 +57,9 @@ function drawLines(scene, lastX, lastYs, X, Ys){
 let lastX = -850;
 let lastYs = drawColumn(scene, 650, 1, -850, 100);
 
-for(let i = 2; i < 40; i++)
+for(let i = 2; i <= 40; i++)
 {
-    let X = i*40-850;
+    let X = i*42.5-850;
 	let Ys = drawColumn(scene, 650, Math.floor(Math.random() * 10), X, 100);
     drawLines(scene, lastX, lastYs, X, Ys);
     lastX = X;

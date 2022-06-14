@@ -1,3 +1,6 @@
+@import url(//db.onlinewebfonts.com/c/c1733d03fa03da0e77d61f11ba8e77de?family=ChurchwardDesignLines-Regular);
+@font-face {font-family: "ChurchwardDesignLines-Regular"; src: url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.eot"); src: url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.woff") format("woff"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.svg#ChurchwardDesignLines-Regular") format("svg"); } 
+
 .webgl{
     position: absolute;
     top: 0;
@@ -29,4 +32,11 @@ button{
 
 button:hover{
     background-color: rgb(255, 142, 101);
+}
+
+title{
+    /*font-family: ChurchwardDesignLines-Regular;*/
+    background-color: coral; 
+    color: rgb(255, 219, 205); 
+    padding: 0 5px;
 }
