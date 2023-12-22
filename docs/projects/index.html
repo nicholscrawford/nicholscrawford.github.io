@@ -1,65 +1,79 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset=utf-8>
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<title>Nichols Crawford</title>
-        <link rel="stylesheet" type="text/css" href="style.css">
-		<link href="//db.onlinewebfonts.com/c/c1733d03fa03da0e77d61f11ba8e77de?family=ChurchwardDesignLines-Regular" rel="stylesheet" type="text/css"/> 
-	</head>
-    
+<html lang="en">
 
-    <body style="background-color: coral;">
-		
-		
-		<!--h4 style="color: #df5533;"><--links below></h4-->
-		<div class="center" style="padding: 0 0px;">
-			<p style="width:50%;"><span style="
-				font-family: ChurchwardDesignLines-Regular;
-				background-color: coral; 
-				color: rgb(255, 219, 205); 
-				padding: 0 5px;
-				font-size:60px;
-				">Projects</span></p>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Nichols Crawford</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
 
+<body class="body-container">
+
+    <div class="center">
+        <p class="title">Nichols Crawford Taylor</p>
+    </div>
+
+	<div class="links-container">
+
+		<div class="left-links">
+			<a href="/">Home</a>
+			<a href="/projects">Projects</a>
+			<a href="/notes">Notes</a>
 		</div>
 
 
-		<div class="center" style="background-color: rgb(255, 219, 205);">
-			<button class="button" type="button" onclick="window.location.href='/';">home</button>
+        <div class="left-links">
+            <a href="/projects/#robot-arm">Robot Arm</a>
+        </div>
+	</div>
 
-			<h2 style="width:50%;"><span style="
-				background-color: rgb(255, 219, 205); 
-				color: coral; 
-				padding: 0 5px;
-				">Current Project</span></h2>
+    <div class="center content-container">
+		<p class="page-title">Projects</p>
 
-			<p style="
-			background-color: rgb(255, 219, 205); 
-			color: coral; 
-			padding: 0 5px;"> 
-				Right now I'm looking into a few different projects. Will update.
+        <section class="section-container">
+            <h2 id="robot-arm" class="section-title">Robot Arm</h2>
+            <p class="section-text">I designed and built a 3D-printed robot arm!</p>
+			<iframe style="padding: 15px 0px" width="560" height="315" src="https://youtube.com/embed/9j3auzQNgjo" frameborder="0" allowfullscreen></iframe>
+			<p class="section-text">I wanted a robot arm that I could program to do general tasks for me. Buying one is exceptionally expensive, so I decided to build one! I had just a little hobbyist mechanical engineering experience, so I made a lot of design decisions I would probably make differently now. 
 			</p>
 
-			<h2 style="width:50%;"><span style="
-				background-color: rgb(255, 219, 205); 
-				color: coral; 
-				padding: 0 5px;
-				">Past Projects</span></h2>
+			<p class="section-text">
+				I designed an actuator with a built in 3D-printed multi-stage planetary gear box. Skateboard bearings are remarkably cheap; you can get <a href="https://www.amazon.com/SINYUM-608-2RS-Skateboard-Bearing-8x22x7/dp/B0771DLLR6/ref=sr_1_15?keywords=skateboard+bearings&qid=1703219648&sr=8-15">50 of them for ~$12</a>. A little less cheap, you can get <a href="https://www.amazon.com/uxcell-6812-2RS-Groove-Bearings-Double/dp/B082PSBTLP/ref=sr_1_1?crid=R4O9FFD62BAN&keywords=60+mm+bearing&qid=1703219791&sprefix=60+mm+bearin%2Caps%2C148&sr=8-1">two 60 mm inner diameter bearings for ~$14</a>.
+				The gearbox in the actuator was designed around those bearings, with the planet gears fitting just around the skateboard bearings. They were attached to a larger circle that fit in the larger bearing, which had the next stages sun gear on it. I ended up with a ratio of about 60 input turns to 1 output turn. 
 
-			<p style="
-			background-color: rgb(255, 219, 205); 
-			color: coral; 
-			padding: 0 5px;"> 
-				3d Printed Robotic Arm
+				
 			</p>
-            <img src="modarm.jpg" style="width:410px; max-width: 100%;" alt="Picture of my first robotic arm.">
 
-            
+			<p class="section-text">
+				I used <a href="https://www.aliexpress.us/item/2251832860842347.html?spm=a2g0o.productlist.main.3.73fc1314AbBVgC&algo_pvid=77877021-2ab3-4e22-812a-da002b9e0451&algo_exp_id=77877021-2ab3-4e22-812a-da002b9e0451-1&pdp_npi=4%40dis%21USD%2137.92%2122.75%21%21%2137.92%21%21%402101e9ce17032203405675868e7160%2167418097210%21sea%21US%210%21AB&curPageLogUid=Dl1Md0Ybcb7I">5008 brushless motors</a>,
+				because they weren't very expensive comparatively, and were wildly overpowered for the application. 
+				To control them, I used <a href="https://mjbots.com/collections/servos-and-controllers">moteus controllers</a>. These are great. A little pricey, but they work flawlessly. The customer support on the moteus discord is also incredible. Josh is on there constantly, and will help anyone and everyone out. 
 
-			<!-- <button class="button" type="button" onclick="window.location.href='/projects/skillsequencing';">skill sequencing</button> -->
-		</div>
+				The controllers were dasiy chained for power and control, (I eventually covered the wires with some cable protectors, but wasn't really happy with the end result because the cable protectors were too wide and heavy, and didn't really securely attach to the arm.) The moteus controller uses CAN-FD, and to send commands to the motors I would just connect to them over an FDCAN to USB converter and send <a href="https://github.com/mjbots/moteus/blob/main/docs/reference.md">CAN frames</a> over serial.
 
-		
-	</body>
+				I integrated it with MoveIt by creating a <a href="https://github.com/nicholscrawford/GrarmHWInterface">controller for the arm</a>, (grarm for green arm) that created the frames manually. 
+				I <a href="http://wiki.ros.org/sw_urdf_exporter">exported my arm to URDF</a> and used MoveIt's <a href="https://moveit.picknik.ai/main/doc/examples/setup_assistant/setup_assistant_tutorial.html">Setup Assistant</a>.
+
+				There were more questionable design choices here. It would be best to use Moteus's already made python interface, as I mention in the repository, and I nevery quite got position and velocity commands working even though that would be a better way of actually controlling it. 
+			</p>
+
+			<p class="section-text">
+
+				I designed the actuators to be sort of modular, and connect together to form the arm. There were a couple sections that were just hollow for length, but the rest was just actuators connected together. 
+				This led to a pretty bad weight distribution, with it being very top heavy. I made it 6dof, just based on some other robots I'd seen. 
+			</p>
+
+			<p class="section-text">
+
+				I'd like to build another robot arm, continuing on with the relatively low cost. I'm very inspired by the <a href="https://www.youtube.com/watch?v=Sg1z725Dsd8">LIMS2-AMBIDEX</a>, and the <a href="https://www.youtube.com/watch?v=i4_0LyXZWTw&pp=ygUQa3VrYSB3cmlzdCBtb2RlbA%3D%3D">kuka forearm</a> design. I think moving away from modular actuation, so that I can improve weight distribution would be good, or just making each component lighter.
+				I'll also not use plastic bearings, as they broke pretty quickly. As extensions, I'd also like it to be on a mobile base, and build a hand integrated with it. 	
+			</p>
+
+
+		</section>
+    </div>
+
+</body>
+
 </html>
