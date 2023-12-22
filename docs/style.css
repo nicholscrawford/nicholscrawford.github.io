@@ -132,3 +132,31 @@
 .section-container a:hover {
     color: #4b7c83;
 }
+
+@media screen and (max-width: 600px) {
+    .links-container .left-links a {
+        font-size: 30px; 
+    }
+}   
+
+@media screen and (max-width: 600px) {
+    .title {
+        font-size: 30px; 
+        font-family: 'churchward-design-noend', sans-serif;
+
+    }
+}   
+
+@media screen and (max-width: 600px) {
+    .page-title {
+        font-size: 30px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+
+    .links-container {
+        float: none;
+        width: 80%;
+    }
+}
