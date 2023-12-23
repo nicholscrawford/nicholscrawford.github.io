@@ -37,9 +37,104 @@
         <p class="page-title">Kinematics</p>
 
         <section class="section-container">
-            <h2 class="section-title">TODO: Write</h2>
-            <p class="section-text">Here, I'll post some robotics notes.</p>
+            <h2 class="section-title">Intro</h2>
+            <p class="section-text">Kinematics in general refers to the motion of bodies in physics. In robotics we're interested in the kinematics of a robot, or the motion of the links and joints of a robot arm. 
+                I'll writie about forward kinematics, where we're interested in how the joint angles of a robot arm affect the position and velocity of the end of the arm. 
+                Also inverse kinematics, which is given an end position for the arm how the joint angles of the robot should be configured.
             
+            </p>
+            <h2 class="section-title">Foreward Kinematics</h2>
+
+            <div class="embed-container">
+                <iframe src="/robot" frameborder="0" allowfullscreen></iframe>
+            </div>
+            
+            <p class="section-text"> This is a colorless model of a KUKA iiwa robot arm.
+                It's got 7 degrees of freedom, and I can control its joint angles in javascript.
+                However, maybe I'd like to know where that endpoint is in space. What are its coordinates? 
+                Well in 1955 Denavit and Hartenberg introduced what is now the standard: DH Parameters/Coordinates.
+            </p>
+
+            <p class="section-text">
+                First, separate your robot into links and joints. Joints are the part of the robot that change (rotate or extend) and links are the links between them. 
+                We'll setup a coordinate system at each joint.
+                For revolute joints, there is an axis of rotation which the joint revolves around. 
+                For prismatic joints, there is an axis of extension/retraction which the joint moves along.
+                We'll call this axis the joint axis, \(z_i\).
+
+                
+            </p>
+            
+            <p class="section-text">
+                Our numbering scheme is going to be a little skewampus. A joint that connects link \(i-1\) to link \(i\), is joint \(i\).
+                Thus the joint is at the proximal end of the link of the same number.
+                That joint's axis, is \(z_{i-1}\). So, at the end of link \(i-1\) is joint \(i\), and then link \(i\). 
+                Joint \(i\), and as a reuslt link \(i\), revolve around (or move along) axis \(z_{i-1}\).
+            </p>
+            
+            <p class ="section-text">
+                To set up the rest of our coordinate system, we observe that with two exceptions, any two lines in space have a normal between them (i.e. their normalized cross product or the normal to the plane they define).
+                That normal, we'll call \(n_i\).
+                \[
+                n_i := \frac{z_{i-1} \times z_i}{\|z_{i-1} \times z_i\|}
+                \]
+                The origin \(O_i\) will be the intersection of \(n_i\) and \(z_i\), \(x_i\) will be our x axis, and will be along \(n_i\) pointing from \(z_{i-1}\) to \(z_{i}\).
+                Finally, \(y_i = z_i \times x_i\).
+            </p>
+
+            <p class="section-text">
+                Now, we can measure the DH parameters. Taken from notes from John Hollerbach's intro to robotics <a href="https://my.eng.utah.edu/~cs5310/files/chapter4.pdf">class notes (password protected)</a>:
+            </p>
+            <ul class="section-text" style="padding-left: 20px;">
+                <li>
+                    <p class="section-text">
+                        "\(\alpha_i\) is the skew angle from \(z_{i-1}\) to \(z_i\), measured about \(x_i\). Note that \(\cos \alpha_i = z_{i-1} \cdot z_i\).
+                    </p>
+                </li>
+                <li>
+                    <p class="section-text">
+                        \(d_i\) is the distance from \(x_{i-1}\) to \(x_i\), as measured along \(z_{i-1}\). Note that \(d_i\) can be negative.
+                    </p>
+                </li>
+                <li>
+                    <p class="section-text">
+                        \(a_i\) is the distance from \(z_{i-1}\) to \(z_i\), measured along \(x_i\). Note that \(a_i\) is always positive because of the definition of \(x_i\).
+                    </p>
+                </li>
+                <li>
+                    <p class="section-text">
+                        \(\theta_i\) is the angle from \(x_{i-1}\) to \(x_i\), measured about \(z_{i-1}\).
+                    </p>
+                </li>
+            </ul>
+
+            <p class="section-text">
+                For a rotary joint, \(θ_i\) varies and is called the joint angle. For a prismatic joint, \(d_i\) varies and is called the joint
+displacement."
+            </p>
+
+
+            <p class="section-text">   
+                We can use those parameters to get the homogeneous transformation matrix \(^{i-1}T_i\) from frame \(i\) to frame \(i-1\):
+
+                \[ 
+                    ^{i-1}T_i = 
+                    \begin{bmatrix}
+                    \text{cos}(\theta_i) & -\text{sin}(\theta_i) \text{cos}(\alpha_i) & \text{sin}(\theta_i) \text{sin}(\alpha_i) & a_i \text{cos}(\theta_i) \\
+                    \text{sin}(\theta_i) & \text{cos}(\theta_i) \text{cos}(\alpha_i) & -\text{cos}(\theta_i) \text{sin}(\alpha_i) & a_i \text{sin}(\theta_i) \\
+                    0 & \text{sin}(\alpha_i) & \text{cos}(\alpha_i) & d_i \\
+                    0 & 0 & 0 & 1
+                    \end{bmatrix}
+                \]
+
+                We'll use this matrix to transform between each joint! Starting from the origin, we can now calculate the end effector position.
+            </p>
+
+            <div class="embed-container">
+                <iframe src="/robot?fk=true" frameborder="0" allowfullscreen></iframe>
+            </div>
+
+
             <!-- <p class="section-text">Inline math: \( E = mc^2 \)</p>
             <p class="section-text">Displayed equation: \[ F = ma \]</p> -->
         </section>

@@ -25,13 +25,18 @@ let scene, camera, renderer, robot, controls;
 init();
 render();
 
+const urlParams = new URLSearchParams(window.location.search);
+const fk = urlParams.get('fk');
+
+
+
 function init() {
 
     scene = new Scene();
     scene.background = new Color(0xFFDBCD);
 
     camera = new PerspectiveCamera();
-    camera.position.set(3, 1, 3);
+    camera.position.set(0.5, 0.2, 0.5);
     camera.lookAt(0, 0, 0);
 
     renderer = new WebGLRenderer({ antialias: true });
@@ -56,11 +61,11 @@ function init() {
     scene.add(ground);
 
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.minDistance = 2;
+    controls.minDistance = 1.4;
     controls.enableDamping = true;
     controls.dampingFactor = 0.2;
     controls.enablePan = false;
-    controls.enableZoom = false;
+    controls.enableZoom = true;
     //controls.maxPolarAngle = Math.PI / 8;
     controls.maxPolarAngle = Math.PI /2;
     controls.target.y = 0.5;
@@ -100,9 +105,7 @@ function init() {
             c.castShadow = true;
         });
         
-        // for (let jointname in robot.joints) {
-        //     robot.joints[jointname].setJointValue(MathUtils.degToRad(90));
-        // }
+        if (fk != "true") {
         robot.joints["iiwa_base_joint"].setJointValue(MathUtils.degToRad(0));
         robot.joints["iiwa_joint_1"].setJointValue(MathUtils.degToRad(0));
         robot.joints["iiwa_joint_2"].setJointValue(MathUtils.degToRad(-40));
@@ -113,7 +116,11 @@ function init() {
         robot.joints["iiwa_joint_7"].setJointValue(MathUtils.degToRad(0));
         robot.joints["iiwa_joint_ee"].setJointValue(MathUtils.degToRad(0));
         robot.joints["tool0_joint"].setJointValue(MathUtils.degToRad(0));
-
+        } else {
+            for (let jointname in robot.joints) {
+                robot.joints[jointname].setJointValue(MathUtils.degToRad(0));
+            }
+        }
 
         robot.updateMatrixWorld(true);
 
@@ -126,10 +133,67 @@ function init() {
         //robot.position.z = window.innerWidth/1000;
         scene.add(robot);
 
+        if (fk == "true") {
+            // Create a container for sliders
+            const slidersContainer = document.createElement('div');
+            slidersContainer.style.position = 'absolute';
+            slidersContainer.style.top = '10px'; 
+            slidersContainer.style.left = '10px';
+            document.body.appendChild(slidersContainer);
+
+            // Create a container for fk solution
+            const fkContainer = document.createElement('div');
+            fkContainer.style.position = 'absolute';
+            fkContainer.style.bottom = '10px'; 
+            fkContainer.style.left = '10px';
+            document.body.appendChild(fkContainer);
+            // Create label for the slider
+            const label = document.createElement('label');
+            label.innerHTML = `End effector position:   `;
+            fkContainer.appendChild(label);
+
+            // Create sliders for joint angles
+            const sliders = {};
+
+            for (let jointName in robot.joints) {
+                // Exclude specific joints from having sliders
+                if (jointName !== 'iiwa_base_joint' && jointName !== 'iiwa_joint_ee' && jointName !== 'tool0_joint') {
+                    const jointSlider = document.createElement('input');
+                    jointSlider.type = 'range';
+                    jointSlider.min = -180; // adjust as needed based on joint range
+                    jointSlider.max = 180;  // adjust as needed based on joint range
+                    jointSlider.value = 0;
+                    jointSlider.step = 1;    // adjust as needed based on precision required
+                    jointSlider.addEventListener('input', function () {
+                        const angle = MathUtils.degToRad(parseFloat(this.value));
+                        robot.joints[jointName].setJointValue(angle);
+                    });
+                    sliders[jointName] = jointSlider;
+
+                    // Create label for the slider
+                    const label = document.createElement('label');
+                    label.innerHTML = `${jointName}:`;
+                    slidersContainer.appendChild(label);
+
+                    // Append slider to the container
+                    slidersContainer.appendChild(jointSlider);
+                }
+            }
+
+            // Render the scene when sliders are released
+            slidersContainer.addEventListener('mouseup', function () {
+                render();
+            });
+        }
+
     };
 
     onResize();
     window.addEventListener('resize', onResize);
+
+    document.body.style.display = 'flex';
+    document.body.style.flexDirection = 'column';
+    document.body.style.alignItems = 'center';
 
 }
 
