@@ -112,10 +112,11 @@
 .left-links a {
     font-family: 'churchward-design', sans-serif;
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
     color: rgb(255, 219, 205);
     text-decoration: none;
-    font-size: 40px;
+    font-size: 35px;
+    padding-left: 15px;
 
 }
 
@@ -137,26 +138,28 @@
     .links-container .left-links a {
         font-size: 30px; 
     }
-}   
 
-@media screen and (max-width: 600px) {
     .title {
         font-size: 30px; 
         font-family: 'churchward-design-noend', sans-serif;
 
     }
-}   
 
-@media screen and (max-width: 600px) {
     .page-title {
         font-size: 30px;
     }
-}
-
-@media screen and (max-width: 600px) {
 
     .links-container {
         float: none;
-        width: 80%;
+        width: 60%;
+    }
+}
+
+@media screen and (min-width: 601px) and (max-width: 1090px) {
+    .links-container {
+        width: 20%;
+        float: none;
+        font-size: 25px; 
+
     }
 }
