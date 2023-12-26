@@ -126,21 +126,19 @@ function addRobotToScene() {
         let { alpha, a, d, theta } = dhParameters[i];
 
         // −1Ti = Trans(di i−1zi−1)Rot(Rz (θi))Trans(ai ixi)Rot(Rx(αi)) 
-
-        // Create a cylinder representing the joint axis
-        const jointAxisGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.08, 32);
-        const jointAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xb83b0d });
-        const jointAxisMesh = new THREE.Mesh(jointAxisGeometry, jointAxisMaterial);
-        jointAxisMesh.rotation.x = Math.PI / 2; // Rotate around x-axis to align with z-axis
-        jointAxisMesh.position.set(0, 0, 0);
-        
         const translationZMatrix = new THREE.Matrix4().makeTranslation(0, 0, d); // Translate d along z_{i-1}
         const rotationZMatrix = new THREE.Matrix4().makeRotationZ(theta); // Rotate around z by theta
         const translationXMatrix = new THREE.Matrix4().makeTranslation(a, 0, 0); // Translate a along x_i
         const rotationXMatrix = new THREE.Matrix4().makeRotationX(alpha); // Rotate around x by alpha
         
         const homogMatrix = new THREE.Matrix4().multiplyMatrices(pastMatrix, translationZMatrix).multiply(rotationZMatrix).multiply(translationXMatrix).multiply(rotationXMatrix);
-
+        
+        // Create a cylinder representing the joint axis
+        const jointAxisGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.08, 32);
+        const jointAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xb83b0d });
+        const jointAxisMesh = new THREE.Mesh(jointAxisGeometry, jointAxisMaterial);
+        jointAxisMesh.rotation.x = Math.PI / 2; // Rotate around x-axis to align with z-axis
+        jointAxisMesh.position.set(0, 0, 0);
         jointAxisMesh.applyMatrix4(homogMatrix);
         scene.add(jointAxisMesh);
         robot.push(jointAxisMesh);
@@ -169,8 +167,8 @@ function addRobotToScene() {
         // Push the extracted components to the points array
         points.push(xTranslation2, yTranslation2, zTranslation2);
 
-        colors.push(255, 0, 0);
-        colors.push(255, 0, 0);
+        colors.push(92/255, 162/255, 171/255);
+        colors.push(92/255, 162/255, 171/255);
 
         const geometry = new LineGeometry();
         geometry.setPositions( points );
@@ -179,10 +177,8 @@ function addRobotToScene() {
         let matLine = new LineMaterial( {
 
             color: 0xFFFFFF,
-            linewidth: 0.002, // in world units with size attenuation, pixels otherwise
+            linewidth: 0.002,
             vertexColors: true,
-            
-            //resolution:  // to be set by renderer, eventually
             dashed: false,
             alphaToCoverage: true,
         } );
@@ -193,22 +189,8 @@ function addRobotToScene() {
         scene.add(line);
         robot.push(line);
         pastMatrix = homogMatrix;
-
-        // // Update the transformation of the robot group
-        // const rotationMatrix = new THREE.Matrix4().makeRotationZ(theta);
-        // robotGroup.applyMatrix4(rotationMatrix);
-
-        // // Move the robot group along the z-axis to represent the translation
-        // const translationMatrix = new THREE.Matrix4().makeTranslation(0, a, 0);
-        // robotGroup.applyMatrix4(translationMatrix);
-
-        // // Twist the link based on the alpha parameter
-        // const twistMatrix = new THREE.Matrix4().makeRotationX(alpha);
-        // robotGroup.applyMatrix4(twistMatrix);
     }
 
-    // Add the robot group to the scene
-    //  scene.add(robotGroup);
 }
 
 

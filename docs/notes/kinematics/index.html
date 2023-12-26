@@ -127,7 +127,7 @@ displacement."
                     \end{bmatrix}
                 \]
 
-                We'll use this matrix to transform between each joint! Starting from the origin, we can now calculate the end effector position. Souring the DH Parameters from <a href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwj87dySmaWDAxXFK0QIHZABD6QQFnoECBQQAQ&url=https%3A%2F%2Fzenodo.org%2Frecord%2F4063575%2Ffiles%2FInverse_kinematics.pdf&usg=AOvVaw3E4hnDQZ5B5YAKBwPDN1cE&opi=89978449">here</a>.
+                We'll use this matrix to transform between each joint! Starting from the origin, we can now calculate the end effector position. Sourcing the DH Parameters from <a href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwj87dySmaWDAxXFK0QIHZABD6QQFnoECBQQAQ&url=https%3A%2F%2Fzenodo.org%2Frecord%2F4063575%2Ffiles%2FInverse_kinematics.pdf&usg=AOvVaw3E4hnDQZ5B5YAKBwPDN1cE&opi=89978449">here</a>.
             </p>
 
             <div class="embed-container">
@@ -135,6 +135,18 @@ displacement."
             </div>
 
 
+            <p class="section-text">
+                Isn't that something. I also coded up a DH parameter visualization tool. The default is the KUKA iiwa, but it's possible to make arbitrary manipulators. You can see how the iiwa corresponds to the parameters in the figure below, from <a href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwj87dySmaWDAxXFK0QIHZABD6QQFnoECBQQAQ&url=https%3A%2F%2Fzenodo.org%2Frecord%2F4063575%2Ffiles%2FInverse_kinematics.pdf&usg=AOvVaw3E4hnDQZ5B5YAKBwPDN1cE&opi=89978449">the same technical report I got the parameters from</a>.    
+            </p>
+            <img src="./photos/iiwa_dh.png" class="section-image" alt="Diagram showing how the iiwa's structure corresponds to its dh parameters." style="width: 50%; min-width: 200px">
+        
+            <div class="embed-container">
+                <iframe src="/dh-param-vis" frameborder="0" allowfullscreen></iframe>
+            </div>
+
+            <p class="section-text">
+                It's a little buggy, so you may need to refresh the page if it starts to act strange. The slider for number of joints also doesn't slide, but it can be clicked or a number entered. I also limited the number of joints to 10, just to make the slider range reasonable. 
+            </p>
             <!-- <p class="section-text">Inline math: \( E = mc^2 \)</p>
             <p class="section-text">Displayed equation: \[ F = ma \]</p> -->
         </section>

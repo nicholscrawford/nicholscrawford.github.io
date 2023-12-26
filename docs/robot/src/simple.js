@@ -1,5 +1,4 @@
 
-import {OrbitControls} from 'https://unpkg.com/three@0.149.0/examples/jsm/controls/OrbitControls.js';
 import {
     WebGLRenderer,
     PerspectiveCamera,
@@ -15,12 +14,14 @@ import {
     Box3,
     LoadingManager,
     MathUtils,
-} from 'https://unpkg.com/three@0.149.0/build/three.module.js';
+} from 'three';
 
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { OBJLoader } from 'https://unpkg.com/three@0.149.0/examples/jsm/loaders/OBJLoader.js';
 import URDFLoader from 'https://unpkg.com/urdf-loader@0.10.4/src/URDFLoader.js';
 
-let scene, camera, renderer, robot, controls;
+let scene, camera, renderer, robot, controls, gui;
 
 const urlParams = new URLSearchParams(window.location.search);
 const fk = urlParams.get('fk');
@@ -28,8 +29,8 @@ const dhParameters = [
     { alpha: -Math.PI / 2, a: 0, d: 0.340, theta: 0 },
     { alpha: Math.PI / 2, a: 0, d: 0, theta: 0 },
     { alpha: Math.PI / 2, a: 0, d: 0.400, theta: 0 },
-    { alpha: -Math.PI, a: 0, d: 0, theta: 0 },
-    { alpha: -Math.PI, a: 0, d: 0.400, theta: 0 },
+    { alpha: -Math.PI / 2, a: 0, d: 0, theta: 0 },
+    { alpha: -Math.PI / 2, a: 0, d: 0.400, theta: 0 },
     { alpha: Math.PI / 2, a: 0, d: 0, theta: 0 },
     { alpha: 0, a: 0, d: 0.126, theta: 0 }
 ]; 
@@ -76,13 +77,13 @@ function setupScene() {
     window.addEventListener('resize', onResize);
 }
 
-function setupControls() {
+function setupControls(minDistance = 1.8) {
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.minDistance = 1.4;
+    controls.minDistance = minDistance;
     controls.enableDamping = true;
     controls.dampingFactor = 0.2;
     controls.enablePan = false;
-    controls.enableZoom = true;
+    controls.enableZoom = false;
     //controls.maxPolarAngle = Math.PI / 2;
     controls.target.y = 0.5;
     controls.update();
@@ -100,7 +101,7 @@ function setupLights() {
 }
 
 
-function loadRobot() {
+function loadRobot(initialPositions = null) {
     const manager = new LoadingManager();
     const loader = new URDFLoader(manager);
   
@@ -123,11 +124,7 @@ function loadRobot() {
     });
   
     manager.onLoad = () => {
-        if (fk != 'true'){
-            initializeRobot(homePosition);
-        } else{
-            initializeRobot();
-        }
+        initializeRobot(initialPositions);
     };
 }
 
@@ -162,7 +159,8 @@ function initializeRobot(jointPositions = null) {
 
 function updateDisplay() {
     if (fk == "true") {
-        addSliders();
+        //addFKSliders();
+        initGui();
         addFKSolution();
         updateLabel(getEEPos());
     }
@@ -173,8 +171,8 @@ function addFKSolution() {
     // Create a container for fk solution
     const fkContainer = document.createElement('div');
     fkContainer.style.position = 'absolute';
-    fkContainer.style.bottom = '10px'; 
-    fkContainer.style.left = '10px';
+    fkContainer.style.top = '15px'; 
+    fkContainer.style.left = '15px';
     document.body.appendChild(fkContainer);
 
     // Create label for the solution
@@ -194,48 +192,50 @@ function updateLabel(newValue) {
     }
 }
 
-function addSliders() {
-    // Create a container for sliders
-    const slidersContainer = document.createElement('div');
-    slidersContainer.style.position = 'absolute';
-    slidersContainer.style.top = '10px'; 
-    slidersContainer.style.left = '10px';
-    document.body.appendChild(slidersContainer);
+// I think this method of changing the joint angles was interesting, but using the lil gui is cleaner and easier.
+//
+// function addFKSliders() {
+//     // Create a container for sliders
+//     const slidersContainer = document.createElement('div');
+//     slidersContainer.style.position = 'absolute';
+//     slidersContainer.style.top = '10px'; 
+//     slidersContainer.style.left = '10px';
+//     document.body.appendChild(slidersContainer);
 
-    // Create sliders for joint angles
-    const sliders = {};
+//     // Create sliders for joint angles
+//     const sliders = {};
 
-    for (let jointName in robot.joints) {
-        // Exclude specific joints from having sliders
-        if (jointName !== 'iiwa_base_joint' && jointName !== 'iiwa_joint_ee' && jointName !== 'tool0_joint') {
-            const jointSlider = document.createElement('input');
-            jointSlider.type = 'range';
-            jointSlider.min = -180; 
-            jointSlider.max = 180;  
-            jointSlider.value = 0;
-            jointSlider.step = 1;
-            jointSlider.addEventListener('input', function () {
-                const angle = MathUtils.degToRad(parseFloat(this.value));
-                robot.joints[jointName].setJointValue(angle);
-            });
-            sliders[jointName] = jointSlider;
+//     for (let jointName in robot.joints) {
+//         // Exclude specific joints from having sliders
+//         if (jointName !== 'iiwa_base_joint' && jointName !== 'iiwa_joint_ee' && jointName !== 'tool0_joint') {
+//             const jointSlider = document.createElement('input');
+//             jointSlider.type = 'range';
+//             jointSlider.min = -180; 
+//             jointSlider.max = 180;  
+//             jointSlider.value = 0;
+//             jointSlider.step = 1;
+//             jointSlider.addEventListener('input', function () {
+//                 const angle = MathUtils.degToRad(parseFloat(this.value));
+//                 robot.joints[jointName].setJointValue(angle);
+//             });
+//             sliders[jointName] = jointSlider;
 
-            // Create label for the slider
-            const label = document.createElement('label');
-            label.innerHTML = `${jointName}:`;
-            slidersContainer.appendChild(label);
+//             // Create label for the slider
+//             const label = document.createElement('label');
+//             label.innerHTML = `${jointName}:`;
+//             slidersContainer.appendChild(label);
 
-            // Append slider to the container
-            slidersContainer.appendChild(jointSlider);
-        }
-    }
+//             // Append slider to the container
+//             slidersContainer.appendChild(jointSlider);
+//         }
+//     }
 
-    // Render the scene when sliders are released
-    slidersContainer.addEventListener('mouseup', function () {
-        render();
-        updateLabel(getEEPos());
-    });
-}
+//     // Render the scene when sliders are released
+//     slidersContainer.addEventListener('mouseup', function () {
+//         render();
+//         updateLabel(getEEPos());
+//     });
+// }
 
 function getEEPos() {
     // Get joint angles
@@ -267,12 +267,40 @@ function getEEPos() {
     return endEffectorPos.map(parseFloat); // Convert strings to numbers
 }
 
+function initGui() {
+    gui = new GUI();
+    gui.title("joint angles");
+
+    // Add input fields for robot DH parameters
+    for (let i = 0; i < dhParameters.length; i++) {
+        let labelname = `joint ${i} angle`;
+        let guiObject = {};
+        guiObject[labelname] = dhParameters[i].theta;
+    
+        gui.add(guiObject, labelname, -180, 180, 0.1).onChange((value) => {
+            dhParameters[i].theta = value;
+    
+            const jointName = `iiwa_joint_${i + 1}`;
+            const angle = MathUtils.degToRad(parseFloat(value));
+            robot.joints[jointName].setJointValue(angle);
+    
+            updateLabel(getEEPos());
+        });
+    }
+}
+
 function init() {
+    let initialPositions = homePosition
+    let minViewDistance = 1.4
+    if (fk == 'true'){
+        initialPositions = null;
+        minViewDistance = 2.0
+    } 
 
     setupScene();
-    setupControls();
+    setupControls(minViewDistance);
     setupLights();
-    loadRobot();
+    loadRobot(initialPositions);
 
 
     document.body.style.display = 'flex';
