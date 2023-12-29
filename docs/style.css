@@ -57,6 +57,8 @@
 .content-container {
     background-color: rgb(255, 219, 205);
     flex-grow: 1;   
+    padding-bottom: 40px;
+    margin-bottom: 10%;
 }
 
 .section-container {
@@ -85,10 +87,11 @@
 
 .section-text {
     background-color: rgb(255, 219, 205);
-    color: rgb(184, 59, 13);
+    color: #7D2C0F;
     width: 80%;
     margin: 0; 
-    padding: 5px 0px;
+    /* padding: 5px 0px; */
+    padding-left: 4px;
 }
 
 .section-image {
@@ -125,7 +128,7 @@
 }
 
 .section-container a {
-    color: #61A0A8;
+    color: #35575C;
     text-decoration: none;
     transition: color 0.3s ease;
 }

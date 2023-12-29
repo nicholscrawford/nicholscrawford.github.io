@@ -23,8 +23,15 @@ import URDFLoader from 'https://unpkg.com/urdf-loader@0.10.4/src/URDFLoader.js';
 
 let scene, camera, renderer, robot, controls, gui;
 
+let x = 0;
+let y = 0;
+let z = 0.6;
+
 const urlParams = new URLSearchParams(window.location.search);
 const fk = urlParams.get('fk');
+const sm = urlParams.get('sm');
+const ik = urlParams.get('ik');
+
 const dhParameters = [
     { alpha: -Math.PI / 2, a: 0, d: 0.340, theta: 0 },
     { alpha: Math.PI / 2, a: 0, d: 0, theta: 0 },
@@ -110,7 +117,7 @@ function loadRobot(initialPositions = null) {
       objLoader.load(
         path,
         result => {
-          onComplete(result);
+          onComplete(result.children[0]);
         },
         undefined,
         err => {
@@ -162,7 +169,14 @@ function updateDisplay() {
         //addFKSliders();
         initGui();
         addFKSolution();
-        updateLabel(getEEPos());
+        updateFKLabel(getEEPos());
+        if (sm=="true"){
+            updateGCLabel(getGC());
+            updatePsiLabel(getPsi());
+        }
+    }
+    if (ik == "true") {
+        initIKGui();
     }
 }
 
@@ -176,16 +190,43 @@ function addFKSolution() {
     document.body.appendChild(fkContainer);
 
     // Create label for the solution
-    const label = document.createElement('label');
+    const label = document.createElement('p');
     // Set an id for the label so it can be easily targeted
     label.id = 'fkLabel';
-    label.innerHTML = `End effector position: <span id="fkValue">Drag the sliders to update!</span>`;
+    label.innerHTML = `End effector position: <span id="fkValue"></span>`;
     fkContainer.appendChild(label);
+
+    if (sm == "true") {
+        // Create label for the solution
+        const label = document.createElement('p');
+        // Set an id for the label so it can be easily targeted
+        label.id = 'smLabel';
+        label.innerHTML = `Self Motion Parameters: Arm Angle ψ: <span id="psi"></span> Global Configuration 2, 4, 6: <span id="globalconf"></span> `;
+        fkContainer.appendChild(label);
+    }
 }
 
-function updateLabel(newValue) {
+function updateFKLabel(newValue) {
     // Get the label element by id
     const label = document.getElementById('fkValue');
+    if (label) {
+        // Update the innerHTML with the new value
+        label.innerHTML = newValue;
+    }
+}
+
+function updatePsiLabel(newValue) {
+    // Get the label element by id
+    const label = document.getElementById('psi');
+    if (label) {
+        // Update the innerHTML with the new value
+        label.innerHTML = newValue;
+    }
+}
+
+function updateGCLabel(newValue) {
+    // Get the label element by id
+    const label = document.getElementById('globalconf');
     if (label) {
         // Update the innerHTML with the new value
         label.innerHTML = newValue;
@@ -237,6 +278,87 @@ function updateLabel(newValue) {
 //     });
 // }
 
+function getGC() {
+    const jointAngles = Array.from({ length: 7 }, (_, i) => robot.joints[`iiwa_joint_${i + 1}`].angle);
+
+    // Determine the values for joints 2, 4, and 6
+    const gcValues = jointAngles.map((angle, index) => {
+        // Check if the joint is 2, 4, or 6 and if the angle is negative or positive
+        if ((index + 1) % 2 === 0) { // joints 2, 4, and 6
+            return angle < 0 ? -1 : 1;
+        }
+        return null; // Return null for other joints
+    });
+
+    // Filter out null values and join the remaining values into a string
+    const resultString = gcValues.filter(value => value !== null).join(', ');
+
+    return resultString;
+}
+
+function getPsi() {
+    // Get joint angles
+    const jointAngles = Array.from({ length: 7 }, (_, i) => robot.joints[`iiwa_joint_${i + 1}`].angle);
+
+    // Update theta values in DH parameters
+    dhParameters.forEach((param, i) => param.theta = jointAngles[i]);
+
+    // Forward kinematics
+    let T = math.identity(4); // Initialize transformation matrix
+
+    for (const { alpha, a, d, theta } of dhParameters) {
+        const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(theta), Math.cos(alpha), Math.sin(alpha)];
+
+        // Update transformation matrix
+        const A = math.matrix([
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha, a * cosTheta],
+            [sinTheta, cosTheta * cosAlpha, -cosTheta * sinAlpha, a * sinTheta],
+            [0, sinAlpha, cosAlpha, d],
+            [0, 0, 0, 1]
+        ]);
+
+        T = math.multiply(T, A);
+    }
+
+    // Extract end-effector position with precision of 2 decimal places
+    const endEffectorPos = [T.get([0, 3]).toFixed(2), T.get([1, 3]).toFixed(2), T.get([2, 3]).toFixed(2)];
+
+    // Get length parameters
+    let d_bs = dhParameters[0].d;
+    let d_se = dhParameters[2].d;
+    let d_ew = dhParameters[4].d;
+    let d_wf = dhParameters[6].d;
+
+    // Get position components.
+    let _0p2 = math.matrix([[0], [0], [d_bs]]);
+    let _2p4 = math.matrix([[0], [d_se], [0]]);
+    let _4p6 = math.matrix([[0], [0], [d_ew]]);
+    let _6p7 = math.matrix([[0], [0], [d_wf]]);
+
+    let _0p7 = T.subset(math.index([0, 1, 2], [3]));
+
+    let _0R7 = T.subset(math.index([0, 1, 2], [0, 1, 2]));
+    let _2p6 = math.subtract(math.subtract(_0p7, _0p2) , (math.multiply(_0R7, _6p7)));
+
+    let gc_4 = robot.joints[`iiwa_joint_4`].angle < 0 ? -1 : 1;
+
+    // let thetav4 = math.acos(
+    //     (math.square(math.norm(_2p6)) - math.square(d_se) - math.sqare(d_ew) ) / 
+    //     2 * d_se * d_ew
+    // );
+
+    let norm_2p6 = math.norm(math.flatten(_2p6));
+
+    psi = math.acos(
+        ( math.subtract(math.add(math.square(d_se), math.square(norm_2p6)) , math.square(d_ew)) ) / 
+        math.multiply(math.multiply(2, d_se),norm_2p6)
+    );
+
+    let roundedPsi = math.round(psi, 3).toString(); 
+    return roundedPsi;
+}
+
+
 function getEEPos() {
     // Get joint angles
     const jointAngles = Array.from({ length: 7 }, (_, i) => robot.joints[`iiwa_joint_${i + 1}`].angle);
@@ -273,7 +395,7 @@ function initGui() {
 
     // Add input fields for robot DH parameters
     for (let i = 0; i < dhParameters.length; i++) {
-        let labelname = `joint ${i} angle`;
+        let labelname = `joint ${i + 1} angle`;
         let guiObject = {};
         guiObject[labelname] = dhParameters[i].theta;
     
@@ -284,9 +406,87 @@ function initGui() {
             const angle = MathUtils.degToRad(parseFloat(value));
             robot.joints[jointName].setJointValue(angle);
     
-            updateLabel(getEEPos());
+            updateFKLabel(getEEPos());
+            if (sm=="true"){
+                updateGCLabel(getGC());
+                updatePsiLabel(getPsi());
+            }
         });
     }
+}
+
+function initIKGui() {
+    gui = new GUI();
+    gui.title("end position");
+
+    let params = {
+        "x": x,
+        "y": y,
+        "z": z,
+    }
+
+    gui.add(params, "x", -1, 1, 0.001).onChange((value) => {
+        x = value;
+        recalculate();
+    });
+    gui.add(params, "y", -1, 1, 0.001).onChange((value) => {
+        y = value;
+        recalculate();
+    });
+    gui.add(params, "z", -1, 1, 0.001).onChange((value) => {
+        z = value;
+        recalculate();
+    });
+
+    function recalculate() {
+        
+    }
+}
+
+function calculate_analytic_ik(){
+    let T = math.matrix([
+        [1, 0, 0, x],
+        [0, 1, 0, y],
+        [0, 0, 1, z],
+        [0, 0, 0, 1]
+    ])
+
+    // Get length parameters
+    let d_bs = dhParameters[0].d;
+    let d_se = dhParameters[2].d;
+    let d_ew = dhParameters[4].d;
+    let d_wf = dhParameters[6].d;
+
+    // Get position components.
+    let _0p2 = math.matrix([[0], [0], [d_bs]]);
+    let _2p4 = math.matrix([[0], [d_se], [0]]);
+    let _4p6 = math.matrix([[0], [0], [d_ew]]);
+    let _6p7 = math.matrix([[0], [0], [d_wf]]);
+
+    let _0p7 = T.subset(math.index([0, 1, 2], [3]));
+
+    // Calculate Psi
+    let _0R7 = T.subset(math.index([0, 1, 2], [0, 1, 2]));
+    let _2p6 = math.subtract(math.subtract(_0p7, _0p2) , (math.multiply(_0R7, _6p7)));
+
+    let gc_4 = robot.joints[`iiwa_joint_4`].angle < 0 ? -1 : 1;
+
+    let norm_2p6 = math.norm(math.flatten(_2p6));
+
+    psi = math.acos(
+        ( math.subtract(math.add(math.square(d_se), math.square(norm_2p6)) , math.square(d_ew)) ) / 
+        math.multiply(math.multiply(2, d_se),norm_2p6)
+    );
+
+
+    // let thetav4 = math.acos(
+    //     (math.square(math.norm(_2p6)) - math.square(d_se) - math.sqare(d_ew) ) / 
+    //     2 * d_se * d_ew
+    // );
+
+
+
+
 }
 
 function init() {
@@ -301,7 +501,6 @@ function init() {
     setupControls(minViewDistance);
     setupLights();
     loadRobot(initialPositions);
-
 
     document.body.style.display = 'flex';
     document.body.style.flexDirection = 'column';

@@ -43,13 +43,13 @@
                 Also inverse kinematics, which is given an end position for the arm how the joint angles of the robot should be configured.
             
             </p>
-            <h2 class="section-title">Foreward Kinematics</h2>
+            <h2 class="section-title">Forward Kinematics</h2>
 
             <div class="embed-container">
                 <iframe src="/robot" frameborder="0" allowfullscreen></iframe>
             </div>
             
-            <p class="section-text"> This is a colorless model of a KUKA iiwa robot arm.
+            <p class="section-text"> This is a model of a KUKA iiwa robot arm.
                 It's got 7 degrees of freedom, and I can control its joint angles in javascript.
                 However, maybe I'd like to know where that endpoint is in space. What are its coordinates? 
                 Well in 1955 Denavit and Hartenberg introduced what is now the standard: DH Parameters/Coordinates.
@@ -147,6 +147,31 @@ displacement."
             <p class="section-text">
                 It's a little buggy, so you may need to refresh the page if it starts to act strange. The slider for number of joints also doesn't slide, but it can be clicked or a number entered. I also limited the number of joints to 10, just to make the slider range reasonable. 
             </p>
+
+            <h2 class="section-title">Inverse Kinematics</h2>
+            
+            <p class="section-text">
+                Inverse kinematics is not quite as simple as forward kinematics. I was taught some methods for inverse kinematics for 6 Degrees of Freedom (DoF) manipulators. 
+                Largely, it boils down to figuring it out with some trigonometry for the first three joints (they take care of position) and then apply a solution to correct rotation using the last three. 
+                This also works for a relatively specific set of arm structures. Something I'm particularily interested in is 7-DoF manipulator inverse kinematics, which I think is underutilized.
+
+            </p>
+
+            <p class="section-text">
+                Becasue it's 7-DoF, there are 7 joint angles to solve for. However, a position and rotation in space only have 6 DoF. 
+                This means our system will not just have one solution, but a manifold of solutions in configuration space.
+                With our iiwa arm, one way of finding a solution is to add a parameter to the position and rotation in space. 
+                Our extra degree of freedom can be modeled as a circle of positions our elbow can take, and we can say the angle around that circle our elbow is the arm angle, \(\psi\).
+            </p>
+
+            
+            <div class="embed-container">
+                <iframe src="/robot?fk=true&sm=true" frameborder="0" allowfullscreen></iframe>
+            </div>
+<!-- 
+            <div class="embed-container">
+                <iframe src="/robot?ik=true" frameborder="0" allowfullscreen></iframe>
+            </div> -->
             <!-- <p class="section-text">Inline math: \( E = mc^2 \)</p>
             <p class="section-text">Displayed equation: \[ F = ma \]</p> -->
         </section>
