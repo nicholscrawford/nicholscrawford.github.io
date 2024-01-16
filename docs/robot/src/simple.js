@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 
 import {
     WebGLRenderer,
@@ -5,6 +6,8 @@ import {
     Scene,
     Mesh,
     PlaneBufferGeometry,
+    CircleGeometry,
+    MeshBasicMaterial,
     ShadowMaterial,
     DirectionalLight,
     PCFSoftShadowMap,
@@ -13,15 +16,19 @@ import {
     AmbientLight,
     Box3,
     LoadingManager,
+    DoubleSide,
     MathUtils,
 } from 'three';
 
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { OBJLoader } from 'https://unpkg.com/three@0.149.0/examples/jsm/loaders/OBJLoader.js';
 import URDFLoader from 'https://unpkg.com/urdf-loader@0.10.4/src/URDFLoader.js';
 
-let scene, camera, renderer, robot, controls, gui;
+let scene, camera, renderer, robot, controls, gui, circle;
 
 let x = 0;
 let y = 0;
@@ -31,6 +38,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const fk = urlParams.get('fk');
 const sm = urlParams.get('sm');
 const ik = urlParams.get('ik');
+const debug = urlParams.get('debug');
 
 const dhParameters = [
     { alpha: -Math.PI / 2, a: 0, d: 0.340, theta: 0 },
@@ -107,6 +115,85 @@ function setupLights() {
     scene.add(ambientLight);
 }
 
+const drawnLines = {};
+
+function createLineSegment(start, end, id = 1) {
+    // Check if there is a line with the same ID
+    if (drawnLines[id]) {
+        // Remove the existing line
+        scene.remove(drawnLines[id]);
+    }
+
+    // Create a line representing the link
+    const points = [];
+    const colors = [];
+
+    // Extract translation components, apply coordinate transform to y up as opposed to z up.
+    const xTranslation = math.subset(start, math.index(0));
+    const yTranslation = math.subset(start, math.index(2));
+    const zTranslation = - math.subset(start, math.index(1));
+    // Push the extracted components to the points array
+    points.push(xTranslation, yTranslation, zTranslation);
+
+    // Extract translation components
+    const xTranslation2 = math.subset(end, math.index(0));
+    const yTranslation2 = math.subset(end, math.index(2));
+    const zTranslation2 = - math.subset(end, math.index(1));
+    // Push the extracted components to the points array
+    points.push(xTranslation2, yTranslation2, zTranslation2);
+    
+    if( id == 3 || id == 4){
+        colors.push(255/255, 0/255, 0/255);
+        colors.push(255/255, 0/255, 0/255);
+    } else{
+        colors.push(92/255, 162/255, 171/255);
+        colors.push(92/255, 162/255, 171/255);
+    }
+    const geometry = new LineGeometry();
+    geometry.setPositions(points);
+    geometry.setColors(colors);
+
+    let matLine = new LineMaterial({
+        color: 0xFFFFFF,
+        linewidth: 0.002,
+        vertexColors: true,
+        dashed: false,
+        alphaToCoverage: true,
+    });
+
+    const line = new Line2(geometry, matLine);
+    line.computeLineDistances();
+    line.scale.set(1, 1, 1);
+
+    // Store the line with its ID
+    drawnLines[id] = line;
+
+    scene.add(line);
+}
+
+function createAxes() {
+    const group = new THREE.Group();
+    // Add origin
+    const originGeometry = new THREE.SphereGeometry(0.005);
+    const originMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const origin = new THREE.Mesh(originGeometry, originMaterial);
+
+    // Add x-axis arrow
+    const xAxisArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 0.5, 0xff0000);
+
+    // Add y-axis arrow
+    const yAxisArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 0.5, 0x00ff00);
+
+    // Add z-axis arrow
+    const zAxisArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 0.5, 0x0000ff);
+
+    group.add(origin);
+    group.add(xAxisArrow);
+    group.add(yAxisArrow);
+    group.add(zAxisArrow);
+
+    return group;
+}
 
 function loadRobot(initialPositions = null) {
     const manager = new LoadingManager();
@@ -159,8 +246,19 @@ function initializeRobot(jointPositions = null) {
     robot.position.y -= bb.min.y;
 
     scene.add(robot);
-
     updateDisplay();
+}
+
+function addCircle(){
+    const geometry = new CircleGeometry( 1, 64 ); 
+    const material = new MeshBasicMaterial({
+        color: 0xff0000,
+        side: DoubleSide,  // Make the material visible from both sides
+        transparent: true,       // Make the material transparent
+        opacity: 0.2          // Set the transparency level (0: fully transparent, 1: fully opaque)
+    }); 
+    circle = new Mesh( geometry, material ); scene.add( circle );
+    scene.add(circle);
 }
 
 
@@ -173,6 +271,8 @@ function updateDisplay() {
         if (sm=="true"){
             updateGCLabel(getGC());
             updatePsiLabel(getPsi());
+            addCircle();
+            scene.add(createAxes());
         }
     }
     if (ik == "true") {
@@ -320,8 +420,20 @@ function getPsi() {
         T = math.multiply(T, A);
     }
 
+    
     // Extract end-effector position with precision of 2 decimal places
     const endEffectorPos = [T.get([0, 3]).toFixed(2), T.get([1, 3]).toFixed(2), T.get([2, 3]).toFixed(2)];
+    
+    // Grab the z-vector of joint 1
+    const {alpha, a, d, theta} = dhParameters[0];
+    const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(theta), Math.cos(alpha), Math.sin(alpha)];    
+    let _0R1z = [
+        [sinTheta * sinAlpha],
+        [-cosTheta * sinAlpha],
+        [cosAlpha]
+    ];
+    console.log("0R1z", _0R1z);
+    
 
     // Get length parameters
     let d_bs = dhParameters[0].d;
@@ -339,25 +451,199 @@ function getPsi() {
 
     let _0R7 = T.subset(math.index([0, 1, 2], [0, 1, 2]));
     let _2p6 = math.subtract(math.subtract(_0p7, _0p2) , (math.multiply(_0R7, _6p7)));
+    const _2p6x = _2p6.subset(math.index(0, 0));
+    const _2p6y = _2p6.subset(math.index(1, 0));
+    const _2p6z = _2p6.subset(math.index(2, 0));
+    console.log("2p6", _2p6, _2p6x, _2p6y, math.atan2(_2p6x, _2p6y) * 180 / math.PI);
+    createLineSegment(math.matrix([_2p6x, _2p6y, 0]), math.matrix([0, 0, 0]));
 
-    let gc_4 = robot.joints[`iiwa_joint_4`].angle < 0 ? -1 : 1;
+    createLineSegment(math.flatten(_0p2), math.add(math.flatten(_2p6), math.flatten(_0p2)), 4);
+    const gc_4 = math.sign(robot.joints[`iiwa_joint_4`].angle);
 
-    // let thetav4 = math.acos(
-    //     (math.square(math.norm(_2p6)) - math.square(d_se) - math.sqare(d_ew) ) / 
-    //     2 * d_se * d_ew
-    // );
+    const thetav4 = gc_4 * math.acos(
+        (math.pow(math.norm(math.flatten(_2p6)), 2) - math.pow(d_se, 2) - math.pow(d_ew, 2) ) / 
+        (2 * d_se * d_ew)
+    );
+    console.log("Theta v4: ", thetav4);
+
+    const _2p6AlignedWithJ1 = 0 == math.norm(math.cross(math.flatten(_2p6), math.flatten(_0R1z)));
+    console.log("Is 2p6 aligned with join 1 axis?", _2p6AlignedWithJ1);
+
+    const thetav1 = _2p6AlignedWithJ1 ? 0 : math.atan2(_2p6y, _2p6x);
 
     let norm_2p6 = math.norm(math.flatten(_2p6));
-
-    psi = math.acos(
+    const phi = math.acos(
         ( math.subtract(math.add(math.square(d_se), math.square(norm_2p6)) , math.square(d_ew)) ) / 
         math.multiply(math.multiply(2, d_se),norm_2p6)
     );
+    
+    const thetav2 = math.atan2(
+        math.sqrt(math.pow(_2p6x,2) + math.pow(_2p6y,2)),
+        _2p6z)
+        + gc_4 * phi;
 
-    let roundedPsi = math.round(psi, 3).toString(); 
-    return roundedPsi;
+    const shoulder_wrist_unit = math.flatten(getShoulderWristUnit());
+    const virtual_shoulder_elbow_unit = math.flatten(getVirtualShoulderElbowUnit(thetav1, thetav2, 0, thetav4));
+    const shoulder_elbow_unit = math.flatten(getShoulderElbowUnit(thetav1, thetav2, 0, thetav4));
+
+    const virtual_sew_plan_normal = math.cross(virtual_shoulder_elbow_unit, shoulder_wrist_unit);
+    const sew_plan_normal = math.cross(shoulder_elbow_unit, shoulder_wrist_unit);
+
+    const psi_sign = math.sign(math.dot(math.cross(virtual_sew_plan_normal, sew_plan_normal), _2p6));
+    const psi = psi_sign * math.acos(math.dot(virtual_sew_plan_normal, sew_plan_normal));
+
+    console.log(thetav1 * 180 / math.PI, thetav2* 180 / math.PI, 0, thetav4* 180 / math.PI);
+
+    return psi;
 }
 
+
+function getShoulderWristUnit (){
+
+    let T = math.identity(4); // Initialize transformation matrix
+    for (let idx = 0; idx < 6; idx++) {
+        const { alpha, a, d, theta } = dhParameters[idx]
+        const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(theta), Math.cos(alpha), Math.sin(alpha)];
+
+        // Update transformation matrix
+        const A = math.matrix([
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha, a * cosTheta],
+            [sinTheta, cosTheta * cosAlpha, -cosTheta * sinAlpha, a * sinTheta],
+            [0, sinAlpha, cosAlpha, d],
+            [0, 0, 0, 1]
+        ]);
+
+        T = math.multiply(T, A);
+    }
+    // Since shoulder and wrist position for virtual and real manipulators are the same, we use real
+    const _0pv6 = T.subset(math.index([0, 1, 2], [3]));
+
+    T = math.identity(4); // Initialize transformation matrix
+    for (let idx = 0; idx < 2; idx++) {
+        const { alpha, a, d, theta } = dhParameters[idx]
+        const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(theta), Math.cos(alpha), Math.sin(alpha)];
+
+        // Update transformation matrix
+        const A = math.matrix([
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha, a * cosTheta],
+            [sinTheta, cosTheta * cosAlpha, -cosTheta * sinAlpha, a * sinTheta],
+            [0, sinAlpha, cosAlpha, d],
+            [0, 0, 0, 1]
+        ]);
+
+        T = math.multiply(T, A);
+    }
+    // Since shoulder and wrist position for virtual and real manipulators are the same, we use real
+    const _0pv2 = T.subset(math.index([0, 1, 2], [3]));
+
+    const _2pv6 = math.subtract(_0pv6, _0pv2);
+
+    const shoulder_wrist_unit = math.divide(_2pv6, math.norm(math.flatten(_2pv6)));
+
+    if(debug == "true"){
+        //createLineSegment(math.flatten(_0pv2), math.flatten(_0pv6))
+    }
+    return shoulder_wrist_unit;
+}
+
+function getShoulderElbowUnit (){
+    let T = math.identity(4); // Initialize transformation matrix
+    for (let idx = 0; idx < 4; idx++) {
+        const { alpha, a, d, theta } = dhParameters[idx]
+        const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(theta), Math.cos(alpha), Math.sin(alpha)];
+
+        // Update transformation matrix
+        const A = math.matrix([
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha, a * cosTheta],
+            [sinTheta, cosTheta * cosAlpha, -cosTheta * sinAlpha, a * sinTheta],
+            [0, sinAlpha, cosAlpha, d],
+            [0, 0, 0, 1]
+        ]);
+
+        T = math.multiply(T, A);
+    }
+    // Since shoulder and wrist position for virtual and real manipulators are the same, we use real
+    const _0pv4 = T.subset(math.index([0, 1, 2], [3]));
+
+    T = math.identity(4); // Initialize transformation matrix
+    for (let idx = 0; idx < 2; idx++) {
+        const { alpha, a, d, theta } = dhParameters[idx]
+        const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(theta), Math.cos(alpha), Math.sin(alpha)];
+
+        // Update transformation matrix
+        const A = math.matrix([
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha, a * cosTheta],
+            [sinTheta, cosTheta * cosAlpha, -cosTheta * sinAlpha, a * sinTheta],
+            [0, sinAlpha, cosAlpha, d],
+            [0, 0, 0, 1]
+        ]);
+
+        T = math.multiply(T, A);
+    }
+    // Since shoulder and wrist position for virtual and real manipulators are the same, we use real
+    const _0pv2 = T.subset(math.index([0, 1, 2], [3]));
+
+    const _2pv4 = math.subtract(_0pv4, _0pv2);
+
+    const shoulder_elbow_unit = math.divide(_2pv4, math.norm(math.flatten(_2pv4)));
+
+    if(debug == "true"){
+        createLineSegment(math.flatten(_0pv2), math.flatten(_0pv4), 2)
+    }
+    return shoulder_elbow_unit;
+}
+
+function getVirtualShoulderElbowUnit (thetav1, thetav2, thetav3, thetav4){
+
+    let T = math.identity(4); // Initialize transformation matrix
+    for (let idx = 0; idx < 2; idx++) {
+        const { alpha, a, d, theta } = dhParameters[idx]
+        const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(theta), Math.cos(alpha), Math.sin(alpha)];
+
+        // Update transformation matrix
+        const A = math.matrix([
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha, a * cosTheta],
+            [sinTheta, cosTheta * cosAlpha, -cosTheta * sinAlpha, a * sinTheta],
+            [0, sinAlpha, cosAlpha, d],
+            [0, 0, 0, 1]
+        ]);
+
+        T = math.multiply(T, A);
+    }
+    // Since shoulder and wrist position for virtual and real manipulators are the same, we use real
+    const _0pv2 = T.subset(math.index([0, 1, 2], [3]));
+
+    const virtual_thetas = [thetav1, thetav2, thetav3, thetav4];
+    let last_point = math.matrix([0, 0, 0]);
+    T = math.identity(4); // Initialize transformation matrix
+    for (let idx = 0; idx < 4; idx++) {
+        const { alpha, a, d, theta } = dhParameters[idx]
+        const [cosTheta, sinTheta, cosAlpha, sinAlpha] = [Math.cos(theta), Math.sin(virtual_thetas[idx]), Math.cos(alpha), Math.sin(alpha)];
+
+        // Update transformation matrix
+        const A = math.matrix([
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha, a * cosTheta],
+            [sinTheta, cosTheta * cosAlpha, -cosTheta * sinAlpha, a * sinTheta],
+            [0, sinAlpha, cosAlpha, d],
+            [0, 0, 0, 1]
+        ]);
+
+        T = math.multiply(T, A);
+        let next_point = math.matrix([math.subset(T, math.index(0, 3)), math.subset(T, math.index(1, 3)), math.subset(T, math.index(2, 3))]);
+        createLineSegment(last_point, next_point, idx + 10);
+        last_point = next_point;
+    }
+    const _0pv4 = T.subset(math.index([0, 1, 2], [3]));
+
+    const _2pv4 = math.subtract(_0pv4, _0pv2);
+
+    const shoulder_elbow_unit = math.divide(_2pv4, math.norm(math.flatten(_2pv4)));
+
+    if(debug == "true"){
+        createLineSegment(math.matrix([0, 0, 0]), math.flatten(shoulder_elbow_unit), 3)
+    }
+    return shoulder_elbow_unit;
+}
 
 function getEEPos() {
     // Get joint angles
