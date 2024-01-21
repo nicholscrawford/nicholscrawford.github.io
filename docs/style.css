@@ -36,6 +36,7 @@
     background-color: coral;
     margin: 0;
     font-family: 'Arial', sans-serif;
+    font-size: large;
 }
 
 .center {
@@ -51,7 +52,7 @@
     color: rgb(255, 219, 205);
     padding: 10px 5px; 
     margin: 0; 
-    font-size: 60px;
+    font-size: 65px;
 }
 
 .content-container {
@@ -155,12 +156,17 @@
 
 
 @media screen and (max-width: 600px) {
+
+    .body {
+        font-size: large;
+    }
+
     .links-container .left-links a {
         font-size: 30px; 
     }
 
     .title {
-        font-size: 30px; 
+        font-size: 50px; 
         font-family: 'churchward-design-noend', sans-serif;
 
     }
@@ -174,6 +180,17 @@
         width: 60%;
     }
 
+    .center {
+        width: 95%;
+    }
+
+    .section-container {
+        padding: 10px;
+    }
+
+    .section-text {
+        width: 98%;
+    }
 
 }
 
