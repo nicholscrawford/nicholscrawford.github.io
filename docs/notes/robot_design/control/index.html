@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Nichols Crawford</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="body-container">
+
+    <div class="center">
+        <p class="title">Nichols Crawford Taylor</p>
+    </div>
+
+    <div class="links-container" id="links-container"></div>
+	
+	
+
+    <div class="center content-container">
+        <p class="page-title">BLDC Control</p>
+
+        <section class="section-container">
+            <h2 class="section-title">FOC Control</h2>
+            <p class="section-text">
+                Given that I've settled on using brushless motors, how should they be controlled?
+                <br>
+                <img src="./photos/bldc.gif" class="section-image" alt="Diagram showing how the bldc motors work." style="width: 50%; min-width: 200px">
+                <br>
+
+                Well we have to know the position of the motor somehow. Without a brush to control the magnets, we've got to turn our electromagnets on and off at the right time to get it to spin.
+                If we only consider on/off/backwards, we have a limited number of possible magnetic field directions we can apply. Because of that, our torque will not be constant and efficiency/speed are limited.
+                However, if we use pwm to control each stator, we can ensure the magnetic field is always optimally pulling the motor. That is sinusoidal control.
+
+                <br>
+
+                Field oriented control is the next step up. I'd like to delve into the algorithm a little more at a future date, but it does seem to perform the <a href="https://www.magnelab.com/wp-content/uploads/2015/02/A-comparison-study-of-the-commutation-methods-for-the-three-phase-permanent-magnet-brushless-dc-motor.pdf">best.</a>
+                This is what I'm planning on using as the algorithm. But, I'm not planning on developing my own board for this, as there are existing options, and I want to actually finish the arm someday.
+            </p>
+
+            <h2 class="section-title">FOC Control Options</h2>
+            <p class="section-text">
+                So for options. The two most prominent are the ODrive, and Moteus. Skyentific used ODrive in his arm, though he has messed with Moteus before.
+                I used Moteus controllers in my last arm.
+            </p>
+
+                <h3 class = "section-title"> Moteus</h3>
+            <p class="section-text">
+
+                I'm a huge Moteus fan. This controller(s) integrates the power switching, control algorithm, and encoder on to one board. It's great, and pretty easy to use.
+                However, pricing is a dealbreaker here. I'd need 7 controllers, (more if I end up using brushless motors for the hand), and the current revision is $104, and the next-gen moteus-n1 is $159. 
+                <br><br>
+                <a href="https://mjbots.com/products/moteus-r4-11">https://mjbots.com/products/moteus-r4-11</a>
+                <a href="https://mjbots.com/products/moteus-n1">https://mjbots.com/products/moteus-n1</a>
+                <br><br>
+                For my arm then this would be $728-$1113, not including shipping, or heat spreader plates.
+            </p>
+
+                <h3 class = "section-title"> ODrive</h3>
+            <p class="section-text">
+
+                ODrive doesn't improve much. Their latest gens are even more expensive, from $159-$229. For the full arm $1113-$1603.
+                <br><br>
+                <a href="https://odriverobotics.com/shop/odrive-s1">https://odriverobotics.com/shop/odrive-s1</a>
+                <a href="https://odriverobotics.com/shop/odrive-pro">https://odriverobotics.com/shop/odrive-pro</a>
+                <br><br>
+                Their older ODrive, which they now don't reccomend for new designs, was for 2 motors and cost $259, or $130 per motor. Still too much.
+                <br><br>
+                <a href="https://odriverobotics.com/shop/odrive-v36">https://odriverobotics.com/shop/odrive-v36</a>
+                <br><br>
+            </p>
+
+                <h3 class = "section-title">Aliexpress ODrive</h3>
+                <p class="section-text">
+                    <a href="https://www.aliexpress.us/item/3256806254849413.html?spm=a2g0o.productlist.main.1.c20cKrVBKrVBCs&algo_pvid=813c8a09-4541-4d85-be81-e15db2d0183d&algo_exp_id=813c8a09-4541-4d85-be81-e15db2d0183d-0&pdp_npi=4%40dis%21USD%21111.03%2154.40%21%21%21111.03%2154.40%21%40210318bb17058843919025571e27dd%2112000037177025977%21sea%21US%210%21AB&curPageLogUid=Ns2huFvWPCRS&utparam-url=scene%3Asearch%7Cquery_from%3A">link</a>
+                </p>
+                <h3 class = "section-title">Aliexpress ODesc</h3>
+                <p class="section-text">
+                    <a href="https://www.aliexpress.us/item/3256805577031122.html?spm=a2g0o.productlist.main.1.6dbc1do81do8Kq&algo_pvid=4058cb74-308a-42f0-a666-c657ef593b48&algo_exp_id=4058cb74-308a-42f0-a666-c657ef593b48-0&pdp_npi=4%40dis%21USD%2155.00%2133.50%21%21%2155.00%2133.50%21%402103226117058845328653142e7b84%2112000034265535547%21sea%21US%210%21AB&curPageLogUid=PPvlvod1d1kJ&utparam-url=scene%3Asearch%7Cquery_from%3A">link</a>
+                </p>
+                <h3 class = "section-title">Simple FOC</h3>
+                <p class="section-text">
+                    <a href="https://simplefoc.com/">link</a>
+                </p>
+
+
+
+
+
+            
+        </section>
+    </div>
+
+    <script src="/dynamic_links.js"></script>
+</body>
+
+</html>

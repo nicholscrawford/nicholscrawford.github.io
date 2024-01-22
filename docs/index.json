@@ -1,0 +1,16 @@
+[
+    {"page": "", "text": "Home"},
+    {"page": "projects", "text": "Projects", "subpages":[
+        {"page": "projects/#robot-arm"}
+    ]},
+    {"page": "notes", "text": "Notes", "subpages": [
+        {"page": "notes/kinematics", "text": "Kinematics", "subpages":[
+            {"page": "notes/kinematics/", "text": "Forward Kinematics"},
+            {"page": "notes/kinematics/inverse_kinematics", "text": "Inverse Kinematics"}
+        ]},
+        {"page": "notes/robot_design", "text": "Robot Design", "subpages": [
+            {"page": "notes/robot_design", "text": "Goals"},
+            {"page": "notes/robot_design/control", "text": "BLDC Control"}
+        ]}
+    ]}
+]

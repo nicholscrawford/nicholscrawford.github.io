@@ -17,15 +17,7 @@
         <p class="title">Nichols Crawford Taylor</p>
     </div>
 
-    <div class="links-container">
-        <div class="left-links">
-            <a href="/">Home</a>
-            <a href="/projects">Projects</a>
-            <a href="/notes">Notes</a>
-        </div>
-
-        <div class="left-links" id="dynamic-links"></div>
-    </div>
+    <div class="links-container" id="links-container"></div>
 	
 	
 
@@ -144,7 +136,7 @@ displacement."
                 It's a little buggy, so you may need to refresh the page if it starts to act strange. The slider for number of joints also doesn't slide, but it can be clicked or a number entered. I also limited the number of joints to 10, just to make the slider range reasonable. 
             </p>
 
-            <h2 class="section-title">Inverse Kinematics</h2>
+            <h2 class="section-title">Self Motion</h2>
             
             <p class="section-text">
                 Inverse kinematics is not quite as simple as forward kinematics. I was taught some methods for inverse kinematics for 6 Degrees of Freedom (DoF) manipulators. 
@@ -156,14 +148,20 @@ displacement."
             <p class="section-text">
                 Becasue it's 7-DoF, there are 7 joint angles to solve for. However, a position and rotation in space only have 6 DoF. 
                 This means our system will not just have one solution, but a manifold of solutions in configuration space.
-                With our iiwa arm, one way of finding a solution is to add a parameter to the position and rotation in space. 
+                With our iiwa arm, one way of finding a solution is to make sure our arm is fully parameterized.
                 Our extra degree of freedom can be modeled as a circle of positions our elbow can take, and we can say the angle around that circle our elbow is the arm angle, \(\psi\).
+                We also have the global configuration parameters, which can either be 1 or -1. 
             </p>
 
             
             <div class="embed-container">
                 <iframe src="/robot?fk=true&sm=true&gui=true&circlevis=true&transrobot=true&startpose=redundancy_vis" frameborder="0" allowfullscreen></iframe>
             </div>
+
+            <p class="section-text">
+                And that's foreward kinematics! On to doing it backwards with <a href="/notes/kinematics/inverse_kinematics">inverse kinematics</a>.
+            </p>
+
 <!-- 
             <div class="embed-container">
                 <iframe src="/robot?ik=true" frameborder="0" allowfullscreen></iframe>
@@ -172,7 +170,7 @@ displacement."
             <p class="section-text">Displayed equation: \[ F = ma \]</p> -->
         </section>
     </div>
-    <script src="/notes/dynamic_links.js"></script>
+    <script src="/dynamic_links.js"></script>
 
 </body>
 
