@@ -107,11 +107,12 @@
 }
 
 .left-links {
-    padding: 0;    
     background-color: #61A0A8;
     
     width: 100%;
-    margin-bottom: 20px; /* Add some space between link sets and content */
+    margin-bottom: 20px; 
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .left-links a {
@@ -120,8 +121,12 @@
     margin-bottom: 2px;
     color: rgb(255, 219, 205);
     text-decoration: none;
-    font-size: 35px;
+    font-size: 30px;
     padding-left: 15px;
+    padding-bottom: 5px;
+    padding-top:5px;
+    padding-right:5px;
+    line-height: 0.8;
 
 }
 

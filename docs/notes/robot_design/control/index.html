@@ -76,23 +76,132 @@
 
                 <h3 class = "section-title">Aliexpress ODrive</h3>
                 <p class="section-text">
+                    Here's where prices drop dramatically.  This would be ~$250 for the whole arm.
+
+                
+                ODrive3.6 Motor Double FOC BLDC High Power Optimized Motor Control Board 12-56V 60A Module Based on ODrive,  $54.40 <br>
+                Shipping: $32.16 for 4 <br>
+
+                $35.78 per moter, and we'd have an extra controller. Before going all out, it'd probably be best to verify quality, current, torque, etc.
+                But this should give position, torque, and velocity control, and it's got a farily high current/voltage limit. Presumably uses same software as the ODrive, since it's a clone.
+                
                     <a href="https://www.aliexpress.us/item/3256806254849413.html?spm=a2g0o.productlist.main.1.c20cKrVBKrVBCs&algo_pvid=813c8a09-4541-4d85-be81-e15db2d0183d&algo_exp_id=813c8a09-4541-4d85-be81-e15db2d0183d-0&pdp_npi=4%40dis%21USD%21111.03%2154.40%21%21%21111.03%2154.40%21%40210318bb17058843919025571e27dd%2112000037177025977%21sea%21US%210%21AB&curPageLogUid=Ns2huFvWPCRS&utparam-url=scene%3Asearch%7Cquery_from%3A">link</a>
                 </p>
-                <h3 class = "section-title">Aliexpress ODesc</h3>
+
+                <h3 class = "section-title">ODesc v4.2</h3>
                 <p class="section-text">
+                    These are hard to find documentation on. The best is <a href="https://sequremall.com/collections/odesc/products/odesc-v4-2-single-drive-high-current-high-precision-brushless-servo-motor-controller-based-on-odrive3-6-upgrade-software-configuration-compatible-with-odrivetool-foc-bldc?variant=42740269580476"> this product page here.</a>
+                    "Based on ODrive3.6 Upgrade" might mean the ODrive S1, and it seems they want you to use the ODrive software for it.
+
+                    They claim 70A continuous, 120A peak, and it comes with a heat spreader. 24V is $39, and 56V is $55, free shipping.
+                    I'd probably do 24V for the last 3, and 56 for the first 4. That'd be $337 for the whole arm. <br> <br>
                     <a href="https://www.aliexpress.us/item/3256805577031122.html?spm=a2g0o.productlist.main.1.6dbc1do81do8Kq&algo_pvid=4058cb74-308a-42f0-a666-c657ef593b48&algo_exp_id=4058cb74-308a-42f0-a666-c657ef593b48-0&pdp_npi=4%40dis%21USD%2155.00%2133.50%21%21%2155.00%2133.50%21%402103226117058845328653142e7b84%2112000034265535547%21sea%21US%210%21AB&curPageLogUid=PPvlvod1d1kJ&utparam-url=scene%3Asearch%7Cquery_from%3A">link</a>
+
+                    There are also some older versions of this, though they seem to be more expensive and less performant, so maybe not worth looking in to.
                 </p>
-                <h3 class = "section-title">Simple FOC</h3>
+
+                <h3 class="section-title">MIT Mini Cheetah Controller</h3>
                 <p class="section-text">
-                    <a href="https://simplefoc.com/">link</a>
+
+                    Another option I'm not sure is worth much investigation. There's not a lot of suppliers I can find, and it's quite expensive at $99 a pop which makes it basically a non starter. 
+                    It's also not clear what the specs might be, in terms of current voltage, etc. <br>
+                    <a href="https://www.aliexpress.us/item/3256801622787293.html?gatewayAdapt=glo2usa4itemAdapt"> Aliexpress link.</a>
                 </p>
 
+                <h3 class = "section-title">Simple FOC - B-G431B-ESC1</h3>
+                <p class="section-text">
+                    This is an interesting option. They provide the algorithm, and then you do the rest. The cost is then a little trickier to calculate.
+                    
+                    This would require communication, computation, and a driver board. They show it working with Arduinos controlling power boards.<br> <br>
+                    <a href="https://simplefoc.com/">Main website link</a>. <br> <br>
 
+                    Under their driver boards, they show a bunch of different options they support. The best cost/performace ratio is probably this dev board from STMicroelectronics ($19). It also has an included STM32, so no need for aditional board. Program, tear the thing in half, and put in in the arm.
+                    <a href = "https://www.mouser.com/ProductDetail/STMicroelectronics/B-G431B-ESC1/?qs=%2Fha2pyFaduj9HtQf9%2FgsBmvGqEl7EbEPOyTxg06xIidkuUIykXhpkA%3D%3D">Mouser link.</a> <br> <br>
 
+                    Without a provided heat sink, and somewhat limited current/cooling, this would probably only be suitable for the last 3 joints/hand.
+                    It may also take further dev time to actually get it working, since I'd have to program the STM32 and learn the libary a bit. It looks like they <a href="https://github.com/simplefoc/Arduino-FOC/blob/master/examples/hardware_specific_examples/B_G431B_ESC1/B_G431B_ESC1.ino">typically use serial</a>, and I'd probably want to use CAN. I'd also have to look further into 
+                    how to set a control law, though it does seem that force control is possible on the board. 
 
+                    <br><br>
 
+                    This would save probably like $60, which isn't nothing, but would make manufacturing moderately more difficult due to several different flashing/software pieces.
+
+                </p>
             
         </section>
+
+        <section class="section-container">
+            <h2 class="section-title">Potential Configurations</h2>
+            <p class="section-text">
+                There's a lot to rule out pretty quickly. Moteus, ODrive, and MIT Mini-Cheetah are out for cost reasons. We're left with Aliexpress ODrive, ODesc4.2, and the B-G431B-ESC1. 
+                I'll list what I see as the configurations, their prices, and why they might be applicable. Later refinement will of course be important.
+            </p>
+
+            <h3 class = "section-title">Current and Cooling are not a Limiting Factor</h3>
+                <p class="section-text">
+                    Cost: $136.5 <br>
+                    7x - B-G431B-ESC1 <br>
+                    With limited power, this seems somewhat unlikely to me. However, it's certainly worth considering. 
+                    If they can reliably hold 0.25 NM of torque, and we can use a 216:1 gear ratio to get ~50 NM, we'd be able to hold ~4kg at a meter. 
+                    Not impossible as an option! It'd for sure be slower and less backdrivable with that ratio though. 
+                </p>
+
+                <h3 class = "section-title">Voltage Isn't That Important</h3>
+                <p class="section-text">
+                    Cost: $214.5 <br>
+                    4x - 24V ODesc v4.2 <br>
+                    3x - B-G431B-ESC1 <br>
+                    This is tempting. It's a low total cost, with good cooling and current capacity for the tough joints. 
+                    Would need to ensure that it can handle it.
+                </p>
+                
+                <h3 class = "section-title">Control is Hard, but Only at the Base</h3>
+                <p class="section-text">
+                    Cost: $278.5 <br>
+                    4x - 56V ODesc v4.2 <br>
+                    3x - B-G431B-ESC1 <br>
+                    This is good for similar reasons, with still an overall low cost. It ups the voltage, which may help with speed and thus a higher gear ratio, but may need better cooling.
+                </p>
+
+                
+                <h3 class = "section-title">Working with New Software Is Hard</h3>
+                <p class="section-text">
+                    Cost: $337 <br>
+                    4x - 56V ODesc v4.2 <br>
+                    3x - 24V ODesc v4.2 <br>
+                    I jokingly titled this, but yeah maybe. 
+                    A less beefy controller could for sure handle joint 7 if we're not planning on holding big long poles by one side.
+                    This goes back to when I mentioned research direction. Arm strength isn't really considered much in current research, even though it's still applicable for the typical research arm.
+                    
+                </p>
+                
+                <h3 class = "section-title">Voltage is Very Important</h3>
+                <p class="section-text">
+                    Cost: $360 <br>
+                    4x - 56V ODesc v4.2 <br>
+                    2x - Aliexpress ODrive <br>
+                    If for some reason voltage is our primary concern, the Aliexpress Odrive could fit in. 
+                    It looks cheap, but with the shipping cost it's really only a marginal improvment over the low voltage ODesc.
+                    However, if that voltage is useful, maybe it has a place.
+                </p>
+
+                <h3 class = "section-title">Control is Hard Everywhere</h3>
+                <p class="section-text">
+                    Cost: $385 <br>
+                    7x - 56V ODesc v4.2 <br>
+                    MAXIMUM POWER! NO CONSIDERATION FOR COST! LET'S HOLD LONG POLES BY ONE END SO JOINT 7 CAN EXPERIENCE REAL TORQUE!
+                    <br>
+                    In all seriousness, it's nice to have uniformity for various reasons. Also it may seem like overkill, but we could get much more compliance with lower gear ratios at the distal end of the arm.
+                </p>
+        </section>
+
+        <section class="section-container">
+            <h2 class="section-title">Position Encoders</h2>
+            <p class="section-text">
+                I'm pretty sure all of these that I'm considering require an external encoder.
+            </p>
+        </section>
+
     </div>
 
     <script src="/dynamic_links.js"></script>

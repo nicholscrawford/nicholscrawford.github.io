@@ -1,7 +1,7 @@
 [
     {"page": "", "text": "Home"},
     {"page": "projects", "text": "Projects", "subpages":[
-        {"page": "projects/#robot-arm"}
+        {"page": "projects/#robot-arm", "text": "Robot Arm"}
     ]},
     {"page": "notes", "text": "Notes", "subpages": [
         {"page": "notes/kinematics", "text": "Kinematics", "subpages":[
