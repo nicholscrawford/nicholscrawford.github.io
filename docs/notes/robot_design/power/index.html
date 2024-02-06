@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Nichols Crawford</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+
+<body class="body-container">
+
+    <div class="center">
+        <p class="title">Nichols Crawford Taylor</p>
+    </div>
+
+	<div class="links-container" id="links-container"></div>
+
+    <div class="center content-container">
+		<p class="page-title">Power Transmission and Structure</p>
+        <section class="section-container">
+            <h2 class="section-title">Gearing</h2>
+            <p class="section-text">
+                Gearing is going to be pretty important. Brushless motors can provide lots of torque, but not enough for a large arm without gearing, and they'll heat up pretty quickly when at max torque.
+                We'll be in high torque situations for longer stretches of time, so we need the capacity for it (i.e. the heavy arm fully extended, working on grabbing an object). Having crazy torque capacity, <strong>especially</strong> at the shoulder, and lots at elbow, will be essential.
+
+                <br><br>
+
+                So I see a few main options for low cost gearing while maintaining backdrivabillity: 3D printing a planetary gear set (like the last arm), 
+                buying a metal plantary gearbox for cheap, or 3d printing a cycloid gear set.
+
+                <br><br>
+
+                I don't want to 3d print a planetary gear set. I think the primary issues are backlash, size, maximum gear ratio, and the weak plastic teeth.
+                I won't discount it completely as an option, even though <a href="https://www.nabtesco.de/en/technology/cycloidal-gears-versus-planetary-gears">this marketing copy </a> is pretty convincing.
+
+                <br><br>
+
+                I see the nema gearboxes as a potential option. There's a ton on Aliexpress, and they're around $40 with shipping. Their rated torque often maxes out at 40Nm, which is possible to recover from with a belt drive from the gearbox.
+                One issue is the ergonomics of mounting it to a motor. They expect the NEMA shaft input, and I'd need to 3d print some sort of adapter that must then withstand the 30Rads/s and 1.0Nm of input. Maybe possible, maybe only for further sections of the arm.
+
+                <br><br>
+
+                I'm a little enamored with the cycloid gear set. It seems well suited for 3d printing. I discounted it when I built my first arm because all the demonstrations I saw used like 40+ bearings, and it just seemed too expensive. 
+                I've found cheaper bearing options, as well as seen some other designs that skip out on large bearings, or skip out on bearings as rollers, or just use pins as rollers. There's nothing on youtube that really fits my niche, so there's some testing to do here.
+
+                I'd like to know the trade-offs for pins vs. printed rollers vs. bearing rollers, how to design for big torques, best backdrivability practices, and I'd like to come up with different designs for different arm sections. 
+                I imagine some lateral loads could be accounted for or ignored for different purposes, and I'll probably want a few different gear ratios for different arm sections. I'm super impressed by this recent <a href="https://www.youtube.com/watch?v=ZUi7jBwxh0g"> James Bruton video</a> on the topic, where he demonstrates some crazy high torques with a thick cycloidal drive.
+
+                <br><br>
+            </p>
+
+            <h2 class="section-title">Belts</h2>
+
+            <p class="section-text">
+                Another super important part of this arm, I think! I'm planning on using them generally as a post-gearbox way to transfer power. This'll help reduce distal weight, and make some design easier.
+
+                <br><br>
+
+                Belts are a personal weakness of mine. I really just haven't had a lot of experience. Generally, I'm aware they need to be tensioned, and that we'll want to stay away from Open timing belts.
+                Some questions to answer are: what belt strengths and sizes do I need, where can I get them cheap, and which methods of tensioning are best. Do I need somthing applying pressure to account for stretching, or just some rollers?
+
+                <br><br>
+
+                I'm also assuming/expecitng I'll be able to 3d print pulleys. I've done it before, and it will enable better connections to other parts since we can avoid mounting a pulley to a shaft.
+            </p>
+
+            <h2 class="section-title">Structure</h2>
+
+            <p class="section-text">
+
+                I've settled on the 7-DoF, S-r-S joint structure, but there's still a lot to be decided.
+
+                <br><br>
+
+                The KUKA iiwa has kind of a snake-look to it, where it's a pretty consistent width, and doesn't support any joint on two sides of the axis.
+
+                In a lot of their more industry focused arms, where I assume it's more imporant to get the most out of the material, they support the joint on two sides, and are more robust looking generally.
+                They also go crazy for counter-weighting and reducing distal weight, which I think is a good idea.
+
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/i4_0LyXZWTw?si=Gk6olLLhOJ-OX30W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <br>
+                This video shows their wrist mechanism, which is fascinating. It keeps all the wrist motors back by the elbow, and uses a complex drive train to transmit power.
+                Although I'm tempted to do something similar, I think it's a little overkill for what I'm doing, and would add cost and complexity.
+
+
+            </p>
+
+            <h2 class="section-title">Counterweighting</h2>
+
+            <p class="section-text">
+                As a cheap way for reducing required torque, I'm planning on counterweighting. By that I mean places motors and gearboxes on the opposite side of the axis as the load.
+
+                <br><br>
+
+                Primarily in two places, the shoulder, and the elbow. Joint 1 will be orthogonal to the ground plane, and so none needed. Joint 2 will broadly move the arm up and down, and will probably often have tons of torque on it.
+                Since the motor/gearbox for joint 2 won't really need to be held up, we don't worry yet. Joints 3 & 4 could use it though. First, we'll rotate as part of the spherical shoulder (3), and then our elbow joint (4). 
+
+                <br><br>
+
+                We could use a differential drive to place both motors as counterweights, but I would like to avoid 3d printing those gears for the same reasons I want to avoid 3d printed planetary gears.
+
+                <br><br>
+
+                My plan though, is to do some fancy power transmission. Perhaps a a cycloidal drive where the external gear is rotates the arm, and then a shaft through it with a 90 degree belt to the elbow. 
+
+                Nothing terribly complicated, but minimizing backlash, cost and strength.
+
+                <br><br>
+
+                We run into another problem with the wrist. 3 DoFs we want all back at the elbow. We could copy the KUKA's wrist mechanism, do something similar, 
+                or, what I plan to do, replicate joints 3 and 4 on a smaller scale for 5 and 6, and then accept the cost of having joint 7's motor located distally.
+
+                <br><br>
+
+                It can be a lot smaller and weaker, since it only needs to cover the rotational force applied by a grasped object, which I think almost always will be pretty minimal.
+
+                Here also, I hope to have keep some room for a hand, similar to the <a href="https://www.labs.righthandrobotics.com/reflexhand">ReFlex</a> hand. 
+            </p>
+
+            <h2 class="section-title">Flex</h2>
+
+            <p class="section-text">
+                Here is our worst enemy. There's no trick to dealing with this as far as I can tell. Supporting each joint, especially near the base, and ensuring each portion of the arm's structural frame is thick plastic or sheet metal is the plan.
+                As I build the arm, I hope to design with this in mind, and test for it along the way.
+
+                <br><br>
+
+                Some parts of the design I'm planning for are a low and wide base, with thick plastic, and tons of supporting (and well supported) bearings around joint 1.\\
+
+                I was considering a cross roller bearing <a href="https://www.aliexpress.us/item/2251832166355676.html"> like this </a> but they are quite pricey, heavy, and I think I can handle lateral loads with cheap skateboard bearings in a circle like past DIY arms have.
+
+
+            </p>
+
+            <h2 class="section-title">Cable Routing</h2>
+            <p class="section-text">
+                This is another thing to keep in mind! It'd be cool if I used a slip ring for each section, but that just isn't going to be worth it, considering how fine with joint limits researchers are.
+                
+                <br><br>
+
+                Still it'll be important to keep in mind where the cables go, and to make sure they've got a hollow middle somewhere to go through.
+            </p>
+
+
+        </section>
+
+		</section>
+    </div>
+    <script src="/dynamic_links.js"></script>
+</body>
+
+</html>

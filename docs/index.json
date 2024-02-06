@@ -10,7 +10,8 @@
         ]},
         {"page": "notes/robot_design", "text": "Robot Design", "subpages": [
             {"page": "notes/robot_design", "text": "Goals"},
-            {"page": "notes/robot_design/control", "text": "BLDC Control"}
+            {"page": "notes/robot_design/control", "text": "BLDC Control"},
+            {"page": "notes/robot_design/power", "text": "Power Transmission & Structure"}
         ]}
     ]}
 ]
