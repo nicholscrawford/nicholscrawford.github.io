@@ -1,6 +1,8 @@
 [
     {"page": "", "text": "Home"},
     {"page": "projects", "text": "Projects", "subpages":[
+        {"page": "projects/#audiobook-app", "text": "Audiobook App"},
+        {"page": "projects/#honors-thesis-template", "text": "Honors Thesis Template"},
         {"page": "projects/#robot-arm", "text": "Robot Arm"}
     ]},
     {"page": "notes", "text": "Notes", "subpages": [
