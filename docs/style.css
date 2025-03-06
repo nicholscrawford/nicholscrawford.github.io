@@ -1,3 +1,4 @@
+/* Font Declarations */
 /* @import url(//db.onlinewebfonts.com/c/c1733d03fa03da0e77d61f11ba8e77de?family=ChurchwardDesignLines-Regular);
 @font-face {font-family: "ChurchwardDesignLines-Regular"; src: url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.eot"); src: url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.woff") format("woff"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.svg#ChurchwardDesignLines-Regular") format("svg"); }  */
 
@@ -6,33 +7,40 @@
     src: url('fonts/churchward-design-lines.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
+}
 @font-face {
     font-family: 'churchward-design-mysshadow';
     src: url('fonts/churchward-design-mysshadow.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
+}
 @font-face {
     font-family: 'churchward-design-noend';
     src: url('fonts/churchward-design-noend.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
+}
 @font-face {
     font-family: 'churchward-design-revshadow';
     src: url('fonts/churchward-design-revshadow.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
+}
 @font-face {
     font-family: 'churchward-design';
     src: url('fonts/churchward-design.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }  
+}
 
-  body {
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
     background-color: coral;
     margin: 0;
     font-family: 'Arial', sans-serif;
@@ -69,10 +77,9 @@
 .section-title {
     font-family: 'churchward-design', sans-serif;
     background-color: rgb(255, 219, 205);
-    color: rgb(241, 85, 28);
+    color: #7D2C0F;
     padding: 0 0px;
     margin: 0; 
-
 }
 
 .page-title {
@@ -82,25 +89,16 @@
     padding: 10px;
     margin: 0; 
     font-size: 40px;
-
-
 }
 
 .section-text {
     background-color: rgb(255, 219, 205);
     color: #7D2C0F;
-    width: 80%;
-    margin: 0; 
-    /* padding: 5px 0px; */
     padding-left: 4px;
     padding-bottom: 10px;
 }
 
-.section-image {
-    max-width: 100%;
-    margin-top: 10px;
-}
-
+/* Links Styling */
 .links-container {
     float: left;
     width: 10%;
@@ -108,7 +106,6 @@
 
 .left-links {
     background-color: #61A0A8;
-    
     width: 100%;
     margin-bottom: 20px; 
     padding-top: 5px;
@@ -124,10 +121,9 @@
     font-size: 30px;
     padding-left: 15px;
     padding-bottom: 5px;
-    padding-top:5px;
-    padding-right:5px;
+    padding-top: 5px;
+    padding-right: 5px;
     line-height: 0.8;
-
 }
 
 .left-links a:hover {
@@ -144,66 +140,166 @@
     color: #4b7c83;
 }
 
-.embed-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-}
-
-.embed-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
+/* Publication Styles */
+.publication-container {
     width: 100%;
-    height: 100%;
+    padding: 0;
 }
 
+.publication-item {
+    display: flex;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(125, 44, 15, 0.2);
+    padding-bottom: 10px;
+    background-color: rgb(255, 219, 205);
+}
 
+.publication-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+.publication-image {
+    flex: 0 0 25%;
+    padding: 10px;
+    text-align: right;
+}
+
+.publication-image img {
+    max-width: 100%;
+    height: auto;
+    border-style: none;
+}
+
+.publication-content {
+    flex: 0 0 75%;
+    padding: 10px 20px;
+    color: #7D2C0F;
+}
+
+.publication-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.publication-title a {
+    color: #35575C;
+    text-decoration: none;
+}
+
+.publication-title a:hover {
+    color: #4b7c83;
+}
+
+.publication-authors {
+    margin-bottom: 10px;
+}
+
+.publication-authors a {
+    color: #35575C;
+    text-decoration: none;
+}
+
+.publication-authors a:hover {
+    color: #4b7c83;
+}
+
+.publication-venue {
+    margin-bottom: 10px;
+}
+
+.publication-venue a {
+    color: #35575C;
+    text-decoration: none;
+}
+
+.publication-venue a:hover {
+    color: #4b7c83;
+}
+
+.publication-links {
+    margin-top: 10px;
+}
+
+.publication-links a {
+    margin-right: 10px;
+    color: #35575C;
+    text-decoration: none;
+}
+
+.publication-links a:hover {
+    color: #4b7c83;
+}
+
+/* Media Queries */
 @media screen and (max-width: 600px) {
-
-    .body {
+    body {
         font-size: large;
     }
-
+    
     .links-container .left-links a {
         font-size: 30px; 
     }
-
+    
     .title {
         font-size: 50px; 
         font-family: 'churchward-design-noend', sans-serif;
-
     }
-
+    
     .page-title {
         font-size: 30px;
     }
-
+    
     .links-container {
         float: none;
         width: 60%;
     }
-
+    
     .center {
         width: 95%;
     }
-
+    
     .section-container {
         padding: 10px;
     }
-
+    
     .section-text {
         width: 98%;
     }
-
+    
+    .publication-item {
+        flex-direction: column; /* Reverse to show text first, then image */
+    }
+    
+    .publication-image, 
+    .publication-content {
+        flex: 0 0 100%;
+        width: 100%;
+    }
+    
+    .publication-image {
+        margin-top: 20px;
+        text-align: center;
+    }
 }
 
 @media screen and (min-width: 601px) and (max-width: 1090px) {
     .links-container {
         width: 20%;
         float: none;
-        font-size: 25px; 
-
+        font-size: 25px;
+    }
+    
+    .publication-item {
+        flex-direction: row;
+    }
+    
+    .publication-image {
+        flex: 0 0 30%;
+    }
+    
+    .publication-content {
+        flex: 0 0 70%;
     }
 }
