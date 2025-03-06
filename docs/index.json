@@ -7,8 +7,7 @@
     ]},
     {"page": "notes", "text": "Notes", "subpages": [
         {"page": "notes/kinematics", "text": "Kinematics", "subpages":[
-            {"page": "notes/kinematics/", "text": "Forward Kinematics"},
-            {"page": "notes/kinematics/inverse_kinematics", "text": "Inverse Kinematics"}
+            {"page": "notes/kinematics/", "text": "Forward Kinematics"}
         ]},
         {"page": "notes/robot_design", "text": "Robot Design", "subpages": [
             {"page": "notes/robot_design", "text": "Goals"},
