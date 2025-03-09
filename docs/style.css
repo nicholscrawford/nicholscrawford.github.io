@@ -1,6 +1,5 @@
 /* Font Declarations */
-/* @import url(//db.onlinewebfonts.com/c/c1733d03fa03da0e77d61f11ba8e77de?family=ChurchwardDesignLines-Regular);
-@font-face {font-family: "ChurchwardDesignLines-Regular"; src: url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.eot"); src: url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.woff") format("woff"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/c1733d03fa03da0e77d61f11ba8e77de.svg#ChurchwardDesignLines-Regular") format("svg"); }  */
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400..700&display=swap');
 
 @font-face {
     font-family: 'churchward-design-lines';
@@ -33,6 +32,24 @@
     font-style: normal;
 }
 
+:root {
+    /* Primary colors */
+    --color-primary: coral;
+    --color-primary-light: rgb(255, 219, 205);
+    
+    /* Text colors */
+    --color-text-dark: #461909;
+    --color-text-medium: #7D2C0F;
+    
+    /* Accent colors */
+    --color-accent: #3B656A;
+    --color-accent-hover: #4b7c83;
+    --color-accent-dark: #21373a;
+    
+    /* Border and detail colors */
+    --color-border: rgba(125, 44, 15, 0.2);
+}
+
 /* Base Styles */
 * {
     box-sizing: border-box;
@@ -41,14 +58,12 @@
 }
 
 body {
-    background-color: coral;
+    background-color: var(--color-primary);
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    font-size: large;
 }
 
 .center {
-    background-color: coral;
+    background-color: var(--color-primary);
     margin: auto;
     width: 80%;
     padding: 0px;
@@ -56,15 +71,15 @@ body {
 
 .title {
     font-family: 'churchward-design-lines', sans-serif;
-    background-color: coral;
-    color: rgb(255, 219, 205);
+    background-color: var(--color-primary);
+    color: var(--color-primary-light);
     padding: 10px 5px; 
     margin: 0; 
     font-size: 65px;
 }
 
 .content-container {
-    background-color: rgb(255, 219, 205);
+    background-color: var(--color-primary-light);
     flex-grow: 1;   
     padding-bottom: 40px;
     margin-bottom: 10%;
@@ -76,16 +91,16 @@ body {
 
 .section-title {
     font-family: 'churchward-design', sans-serif;
-    background-color: rgb(255, 219, 205);
-    color: #7D2C0F;
+    background-color: var(--color-primary-light);
+    color: var(--color-text-medium);
     padding: 0 0px;
     margin: 0; 
 }
 
 .page-title {
     font-family: 'churchward-design-mysshadow', sans-serif;
-    background-color: rgb(255, 219, 205);
-    color: #7D2C0F;
+    background-color: var(--color-primary-light);
+    color: var(--color-text-medium);
     padding: 10px;
     margin: 0; 
     font-size: 40px;
@@ -94,10 +109,21 @@ body {
 }
 
 .section-text {
-    background-color: rgb(255, 219, 205);
-    color: #7D2C0F;
+    background-color: var(--color-primary-light);
+    color: var(--color-text-dark);
     padding-left: 4px;
     padding-bottom: 10px;
+    line-height: 1.5;
+
+    font-family: "Lora", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: medium;
+}
+
+.section-image {
+    /* height: 100%;  this doesn't work */
 }
 
 /* Links Styling */
@@ -107,7 +133,7 @@ body {
 }
 
 .left-links {
-    background-color: #3B656A;
+    background-color: var(--color-accent);
     width: 100%;
     margin-bottom: 20px; 
     padding-top: 5px;
@@ -118,7 +144,7 @@ body {
     font-family: 'churchward-design', sans-serif;
     display: block;
     margin-bottom: 2px;
-    color: #ffdbcd;
+    color: var(--color-primary-light);
     text-decoration: none;
     font-size: 30px;
     padding-left: 15px;
@@ -133,14 +159,28 @@ body {
 }
 
 .section-container a {
-    color: #3B656A;
+    color: var(--color-accent);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .section-container a:hover {
-    color: #4b7c83;
+    color: var(--color-accent-hover);
 }
+
+.image-container {
+    display: flex;
+    width: 100%;
+    gap: 10px; 
+    height: 50vh;
+}
+/*
+    .image-container img {
+        object-fit: contain; 
+        height: 100%; 
+        flex: 1; /* Each image takes equal width */
+        /* max-width: 50%; */
+    /* } */ */
 
 /* Publication Styles */
 .publication-container {
@@ -151,9 +191,9 @@ body {
 .publication-item {
     display: flex;
     margin-bottom: 10px;
-    border-bottom: 1px solid rgba(125, 44, 15, 0.2);
+    border-bottom: 1px solid var(--color-border);
     padding-bottom: 10px;
-    background-color: rgb(255, 219, 205);
+    background-color: var(--color-primary-light);
 }
 
 .publication-item:last-child {
@@ -177,7 +217,13 @@ body {
 .publication-content {
     flex: 0 0 75%;
     padding: 10px 20px;
-    color: #7D2C0F;
+    color: var(--color-text-medium);
+
+    font-family: "Lora", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: medium;
 }
 
 .publication-title {
@@ -186,12 +232,12 @@ body {
 }
 
 .publication-title a {
-    color: #35575C;
+    color: var(--color-accent-dark);
     text-decoration: none;
 }
 
 .publication-title a:hover {
-    color: #4b7c83;
+    color: var(--color-accent-hover);
 }
 
 .publication-authors {
@@ -199,12 +245,12 @@ body {
 }
 
 .publication-authors a {
-    color: #35575C;
+    color: var(--color-accent-dark);
     text-decoration: none;
 }
 
 .publication-authors a:hover {
-    color: #4b7c83;
+    color: var(--color-accent-hover);
 }
 
 .publication-venue {
@@ -212,12 +258,12 @@ body {
 }
 
 .publication-venue a {
-    color: #35575C;
+    color: var(--color-accent-dark);
     text-decoration: none;
 }
 
 .publication-venue a:hover {
-    color: #4b7c83;
+    color: var(--color-accent-hover);
 }
 
 .publication-links {
@@ -226,12 +272,12 @@ body {
 
 .publication-links a {
     margin-right: 10px;
-    color: #35575C;
+    color: var(--color-accent-dark);
     text-decoration: none;
 }
 
 .publication-links a:hover {
-    color: #4b7c83;
+    color: var(--color-accent-hover);
 }
 
 .embed-container {
@@ -280,9 +326,19 @@ body {
     .section-container {
         padding: 10px;
     }
+    .section-image {
+        height: auto;
+        width: 100%;
+    }
     
     .section-text {
         width: 98%;
+    }
+    
+    .image-container
+    {
+        flex-direction: column;
+        height: auto
     }
     
     .publication-item {
@@ -307,6 +363,12 @@ body {
         float: none;
         font-size: 25px;
     }
+
+    .image-container
+    {
+        flex-direction: column;
+        height: auto
+    }
     
     .publication-item {
         flex-direction: row;
@@ -319,4 +381,4 @@ body {
     .publication-content {
         flex: 0 0 70%;
     }
-}
+}   
